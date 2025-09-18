@@ -5,13 +5,18 @@
 ```javascript
 {
   _id: ObjectId,
+
   email: String,
   passwordHash: String,
+
+
   profil:{
   name: String,
   avatar: String, // img,link
   birthday: Date,
   tags: []
+  },
+
   wishList:[]
   giftHistory:[
     {
@@ -22,8 +27,7 @@
     }
   ]
   }
-
-  contacts: [ObjectId], // Referenz auf Contact Schema
+ contacts: [ObjectId], // Referenz auf Contact Schema
 }
 ```
 
@@ -41,18 +45,18 @@
 
 
   linkedUserId: {
-    type: ObjectId//ref 'User',
+    type: ObjectId //ref 'User',
     default: null
   },
 
-  // 自定义联系人信息（仅当type为custom时使用）
+  // （type:custom）
   customInfo: {
     name: String,
     avatar: String,
-    age: Number,
-    interests: [String],
-
+    birthday: Number,
+    tags: [String],
   },
+
   wishList: [String],
   giftHistory:[{}]
   eventList :[objectId]
@@ -152,10 +156,11 @@ const notificationSchema = new mongoose.Schema(
   ownerId: ObjectId, // ref user
   contactId: ObjectId, // Referenz auf Contact Schema
   title: String, // z.B. "Geburtstag", "Weihnachten", "Einschulung"
+  gift: String,
   date: Date,
   isRepeat: {String, enum ["yearly","none"] , default: "none"}
   isPinned: Boolean,
-  status: {String, enum ['activ',"completed","achieved"]},
+  // status: {String, enum ['activ',"completed","achieved"]} // ???
 
 }
 ```
@@ -163,14 +168,14 @@ const notificationSchema = new mongoose.Schema(
 ### GiftHistory ???
 
 ```javascript
-{
-  _id: ObjectId,
-  contactId: ObjectId, // Referenz auf Contact Schema
-  eventId: ObjectId, // Referenz auf GiftEvent Schema (optional)
-  giftName: String,
-  description: String, // Optional
-  dateGiven: Date
-}
+// {
+//   _id: ObjectId,
+//   contactId: ObjectId, // Referenz auf Contact Schema
+//   eventId: ObjectId, // Referenz auf GiftEvent Schema (optional)
+//   giftName: String,
+//   description: String, // Optional
+//   dateGiven: Date
+// }
 ```
 
 ### 5. GiftRecommendation (KI)
