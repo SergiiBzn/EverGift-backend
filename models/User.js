@@ -11,17 +11,35 @@ const userSchema = new Schema({
   },
 
   profil: {
-    username: {
+    name: {
       type: String,
       default: '',
+    },
+    avatar: {
+      type: String,
+    },
+    birthday: {
+      type: Date,
+      required: true,
+    },
+    tags: {
+      type: Array,
     },
   },
   wishList: {
     type: Array,
     default: [],
   },
+
   giftHistory: [
     {
+      role: {
+        type: String,
+        enum: ['user', 'custom'],
+        default: 'custom',
+        required: true,
+      },
+
       giftName: String,
       from: { type: mongoose.Schema.Types.ObjectId, ref: 'Contact' },
       fromName: String,
