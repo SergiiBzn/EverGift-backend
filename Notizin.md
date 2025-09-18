@@ -26,7 +26,7 @@
       date: Date
     }
   ]
-  }
+
  contacts: [ObjectId], // Referenz auf Contact Schema
 }
 ```
@@ -77,12 +77,12 @@
 const contactRequestSchema = new mongoose.Schema({
   from: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   to: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   message: {
@@ -91,8 +91,8 @@ const contactRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "accepted", "rejected"],
-    default: "pending",
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending',
   },
   respondedAt: Date,
 });
@@ -105,12 +105,12 @@ const notificationSchema = new mongoose.Schema(
   {
     recipient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     type: {
       type: String,
-      enum: ["contact_request", "gift_reminder", "system"],
+      enum: ['contact_request', 'gift_reminder', 'system'],
       required: true,
     },
     title: {
@@ -125,15 +125,15 @@ const notificationSchema = new mongoose.Schema(
     relatedData: {
       requestId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ContactRequest",
+        ref: 'ContactRequest',
       },
       eventId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "GiftEvent",
+        ref: 'GiftEvent',
       },
       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     },
     isRead: {
