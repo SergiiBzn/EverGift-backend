@@ -1,19 +1,39 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
+const receivedGiftSchema = new Schema({
+  ownerId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  contactType: {
+    type: String,
+    enum: ["user", "custom"],
+    required: true,
+  },
+  gift: { type: Schema.Types.ObjectId, ref: "Gift" },
+  from: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
+  fromName: { type: Array, default: [] }, // custom
+});
+
+const ReceivedGift = model("receivedGift", receivedGiftSchema);
+
+//========================  User   ===================================================
 const userSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
     required: true,
+    select: false,
   },
-
   profil: {
     name: {
       type: String,
-      default: '',
+      default: "",
     },
     avatar: {
       type: String,
@@ -30,23 +50,13 @@ const userSchema = new Schema({
     type: Array,
     default: [],
   },
-
-  giftHistory: [
+  receivedGifts: [
     {
-      role: {
-        type: String,
-        enum: ['user', 'custom'],
-        default: 'custom',
-        required: true,
-      },
-
-      giftName: String,
-      from: { type: mongoose.Schema.Types.ObjectId, ref: 'Contact' },
-      fromName: String,
-      recievedDate: { type: Date, required: true },
+      type: Schema.Types.ObjectId,
+      ref: "ReceivedGift",
     },
   ],
 });
 
-const User = model('user', userSchema);
+const User = model("user", userSchema);
 export default User;
