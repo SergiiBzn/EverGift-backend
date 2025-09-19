@@ -42,20 +42,17 @@ const userSchema = new Schema({
       type: Date,
       required: true,
     },
-    tags: {
-      type: Array,
-    },
+    tags: [String],
   },
-  wishList: {
-    type: Array,
-    default: [],
-  },
+  wishList: [String],
   receivedGifts: [
     {
       type: Schema.Types.ObjectId,
       ref: "ReceivedGift",
     },
   ],
+  contacts: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
+  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 });
 
 const User = model("user", userSchema);
