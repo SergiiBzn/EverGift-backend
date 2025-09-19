@@ -194,44 +194,60 @@ const notificationSchema = new mongoose.Schema(
 ```
 
 ---
+## Nächste Schritte
 
-Users Endpoints
+Sie können jetzt beginnen mit:
 
-POST /users/register
-POST/users/login
-DELETE /users/logout
-GET /users/me
-PUT /users/me
-DELETE /users/me
-receivedGifts Endpoints, z.B.:
+1. **Erstellen der Schemas in Mongoose.**
+2. **Users Endpoints**
 
-GET /receivedGifts (Get receivedGifts)
-GET /receivedGifts/:id (Get receivedGift)
-POST /receivedGifts (receivedGift hinzufügen)
-PUT /receivedGifts/:id (Update receivedGift)
-DELETE /receivedGifts/:id (Delete receivedGift)
-givenGifts Endpoints, z.B.:
-GET givenGifts (Get givenGifts)
-GET /givenGifts/:id (Get givenGift)
-POST /givenGifts (givenGift hinzufügen)
-PUT /givenGifts/:id (Update givenGift)
-DELETE /givenGifts/:id (Delete givenGift)
-Contacts Endpoints, z.B.:
-GET /contacts (Get contacts)
-GET /contacts/:id (Get contact)
-POST /contacts (Kontakt hinzufügen) -> Middleware
-PUT /contacts/:id (Update contact) -> Middleware
-DELETE /contacts/:id (Delete contact) -> Middleware
-POST /contacts/:id/events (Event für Kontakt hinzufügen) -> Middleware
-GET /contacts/:id/events (Events für Kontakt erhalten)
-GET /contacts/:id/events/:id (Event für Kontakt erhalten)
-PUT /contacts/:id/events/:id (Event für Kontakt wechseln)
-DELETE /contacts/:id/events/:id (Event für Kontakt löschen)
-POST /contacts/:id/history (GiftHistory für Kontakt hinzufügen) -> Middleware
-GET /contacts/:id/history (GiftHistory für Kontakt erhalten)
-GET /contacts/:id/history/:id (GiftHistory für Kontakt erhalten)
-PUT /contacts/:id/history/:id (GiftHistory für Kontakt wechseln)
-DELETE /contacts/:id/history/:id (GiftHistory für Kontakt löschen)
-GiftEvents Endpoints
+   - POST /users/register
+   - POST/users/login
+   - DELETE /users/logout
+   - GET /users/me
+   - PUT /users/me
+   - DELETE /users/me
 
-GET /events
+3. **receivedGifts Endpoints**, z.B.:
+
+- GET /receivedGifts (Get receivedGifts)
+- GET /receivedGifts/:id (Get receivedGift)
+- POST /receivedGifts (receivedGift hinzufügen)
+- PUT /receivedGifts/:id (Update receivedGift)
+- DELETE /receivedGifts/:id (Delete receivedGift)
+
+3. **givenGifts Endpoints**, z.B.:
+
+- GET givenGifts (Get givenGifts)
+- GET /givenGifts/:id (Get givenGift)
+- POST /givenGifts (givenGift hinzufügen)
+- PUT /givenGifts/:id (Update givenGift)
+- DELETE /givenGifts/:id (Delete givenGift)
+
+4. **Contacts Endpoints**, z.B.:
+
+- GET /contacts (Get contacts)
+- GET /contacts/:id (Get contact)
+- POST /contacts (Kontakt hinzufügen) -> Middleware
+- PUT /contacts/:id (Update contact) -> Middleware
+- DELETE /contacts/:id (Delete contact) -> Middleware
+
+---
+
+- POST /contacts/:id/events (Event für Kontakt hinzufügen) -> Middleware
+- GET /contacts/:id/events (Events für Kontakt erhalten)
+- GET /contacts/:id/events/:id (Event für Kontakt erhalten)
+- PUT /contacts/:id/events/:id (Event für Kontakt wechseln)
+- DELETE /contacts/:id/events/:id (Event für Kontakt löschen)
+
+---
+
+- POST /contacts/:id/history (GiftHistory für Kontakt hinzufügen) -> Middleware
+- GET /contacts/:id/history (GiftHistory für Kontakt erhalten)
+- GET /contacts/:id/history/:id (GiftHistory für Kontakt erhalten)
+- PUT /contacts/:id/history/:id (GiftHistory für Kontakt wechseln)
+- DELETE /contacts/:id/history/:id (GiftHistory für Kontakt löschen)
+
+5. **GiftEvents Endpoints**
+
+   - GET /events
