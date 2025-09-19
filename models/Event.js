@@ -9,5 +9,5 @@ const eventSchema = new Schema({
   isPinned: { type: Boolean, default: false },
 });
 
-const Event = model("event", eventSchema);
+const Event = model("Event", eventSchema);
 export default Event;
