@@ -130,15 +130,11 @@ Projektpräsentation fertigstellen.
 - **UI/UX Optimierung:** Farben, Icons, Tags vereinheitlichen, die
   Benutzerfreundlichkeit verbessern.
 - **Figma: Feinschliff**, Export von finalen Icons/Illustrationen.
--
-
-**Ergebnis:**
+- **Ergebnis:**
 
 - Fertige, präsentierbare Anwendung mit Kernfunktionen und grundlegenden
   Empfehlungen.
--
-
----
+- ***
 
 ## Technische Empfehlungen
 
@@ -211,14 +207,14 @@ Projektpräsentation fertigstellen.
 ### GiftHistory
 
 ```
-{
+<!-- {
   _id: ObjectId,
   contactId: ObjectId, // Referenz auf Contact Schema
   eventId: ObjectId, // Referenz auf GiftEvent Schema (optional)
   giftName: String,
   description: String, // Optional
   dateGiven: Date
-}
+} -->
 ```
 
 ### 5. GiftRecommendation (KI)
@@ -240,18 +236,29 @@ Sie können jetzt beginnen mit:
 
 1. **Erstellen der Schemas in Mongoose.**
 2. **Users Endpoints**
+
    - POST /users/register
    - POST/users/login
    - DELETE /users/logout
    - GET /users/me
    - PUT /users/me
    - DELETE /users/me
-3. **Contacts Endpoints**, z.B.:
-   - GET /contacts (Get contacts)
-   - GET /contacts/:id (Get contact)
-   - POST /contacts (Kontakt hinzufügen) -> Middleware
-   - PUT /contacts/:id (Update contact) -> Middleware
-   - DELETE /contacts/:id (Delete contact) -> Middleware
+
+3. **recievedGifts Endpoints**, z.B.:
+
+- GET /recievedGifts (Get recievedGifts)
+- GET /recievedGifts/:id (Get recievedGifts)
+- POST /recievedGifts (recievedGifts hinzufügen)
+- PUT /recievedGifts/:id (Update recievedGifts)
+- DELETE /recievedGifts/:id (Delete recievedGifts)
+
+4. **Contacts Endpoints**, z.B.:
+
+- GET /contacts (Get contacts)
+- GET /contacts/:id (Get contact)
+- POST /contacts (Kontakt hinzufügen) -> Middleware
+- PUT /contacts/:id (Update contact) -> Middleware
+- DELETE /contacts/:id (Delete contact) -> Middleware
 
 ---
 
