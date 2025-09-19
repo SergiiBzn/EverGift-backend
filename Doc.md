@@ -252,6 +252,14 @@ Sie können jetzt beginnen mit:
 - PUT /receivedGifts/:id (Update receivedGift)
 - DELETE /receivedGifts/:id (Delete receivedGift)
 
+3. **givenGifts Endpoints**, z.B.:
+
+- GET givenGifts (Get givenGifts)
+- GET /givenGifts/:id (Get givenGift)
+- POST /givenGifts (givenGift hinzufügen)
+- PUT /givenGifts/:id (Update givenGift)
+- DELETE /givenGifts/:id (Delete givenGift)
+
 4. **Contacts Endpoints**, z.B.:
 
 - GET /contacts (Get contacts)
