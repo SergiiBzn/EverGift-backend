@@ -248,9 +248,9 @@ Sie können jetzt beginnen mit:
 
 - GET /receivedGifts (Get receivedGifts)
 - GET /receivedGifts/:id (Get receivedGift)
-- POST /receivedGifts (receivedGifts hinzufügen)
-- PUT /receivedGifts/:id (Update receivedGifts)
-- DELETE /receivedGifts/:id (Delete receivedGifts)
+- POST /receivedGifts (receivedGift hinzufügen)
+- PUT /receivedGifts/:id (Update receivedGift)
+- DELETE /receivedGifts/:id (Delete receivedGift)
 
 4. **Contacts Endpoints**, z.B.:
 

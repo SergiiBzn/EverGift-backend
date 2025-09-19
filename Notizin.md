@@ -37,7 +37,7 @@
 {
   owner:ObjectId // ref: 'User',
   // Contact Type
-    type: {
+    ContactType: {
     type: String,
     enum: ['user', 'custom'],
     required: true
