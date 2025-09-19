@@ -244,13 +244,13 @@ Sie können jetzt beginnen mit:
    - PUT /users/me
    - DELETE /users/me
 
-3. **recievedGifts Endpoints**, z.B.:
+3. **receivedGifts Endpoints**, z.B.:
 
-- GET /recievedGifts (Get recievedGifts)
-- GET /recievedGifts/:id (Get recievedGifts)
-- POST /recievedGifts (recievedGifts hinzufügen)
-- PUT /recievedGifts/:id (Update recievedGifts)
-- DELETE /recievedGifts/:id (Delete recievedGifts)
+- GET /receivedGifts (Get receivedGifts)
+- GET /receivedGifts/:id (Get receivedGift)
+- POST /receivedGifts (receivedGifts hinzufügen)
+- PUT /receivedGifts/:id (Update receivedGifts)
+- DELETE /receivedGifts/:id (Delete receivedGifts)
 
 4. **Contacts Endpoints**, z.B.:
 

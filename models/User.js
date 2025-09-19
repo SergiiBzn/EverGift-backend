@@ -50,7 +50,7 @@ const userSchema = new Schema({
     type: Array,
     default: [],
   },
-  recievedGifts: [
+  receivedGifts: [
     {
       type: Schema.Types.ObjectId,
       ref: "ReceivedGift",
