@@ -1,26 +1,34 @@
-import { Router } from "express";
+import { Router } from 'express';
+import {
+  getAllGivenGifts,
+  getGivenGift,
+  createGivenGift,
+  updateGivenGift,
+  deleteGivenGift,
+} from '../controllers/givenGift.controller.js';
+
 const contactRouter = Router();
 
-contactRouter.route("/").get(getAllContacts).post(createContact);
+contactRouter.route('/').get(getAllContacts).post(createContact);
 contactRouter
-  .route("/:id")
+  .route('/:id')
   .get(getContact)
   .put(updateContact)
   .delete(deleteContact);
 
 contactRouter
-  .route("/:id/givenGifts")
+  .route('/:id/givenGifts')
   .get(getAllGivenGifts)
   .post(createGivenGift);
 contactRouter
-  .route("/:id/givenGifts/:giftId")
+  .route('/:id/givenGifts/:giftId')
   .get(getGivenGift)
   .put(updateGivenGift)
   .delete(deleteGivenGift);
 
-contactRouter.route("/:id/events").get(getAllEvents).post(createEvent);
+contactRouter.route('/:id/events').get(getAllEvents).post(createEvent);
 contactRouter
-  .route("/:id/events/:eventId")
+  .route('/:id/events/:eventId')
   .get(getEvent)
   .put(updateEvent)
   .delete(deleteEvent);
