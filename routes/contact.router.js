@@ -1,12 +1,33 @@
 import { Router } from "express";
+import {
+  getAllContacts,
+  getContact,
+  createContact,
+  updateContactNote,
+  deleteContact,
+  updateContactProfile,
+} from "../controllers/contact.controller.js";
+import { checkCustomContact } from "../middlewares/index.js";
 const contactRouter = Router();
 
 contactRouter.route("/").get(getAllContacts).post(createContact);
+// get and delete contact by ID
 contactRouter
   .route("/:id")
   .get(getContact)
-  .put(updateContact)
-  .delete(deleteContact);
+  .delete(checkCustomContact, deleteContact);
+
+// update contact note
+contactRouter.route("/:id/note").put(updateContactNote);
+
+// update contact profile and wishlist if custom contact
+contactRouter
+  .route("/:id/profile")
+  .put(checkCustomContact, updateContactProfile);
+
+contactRouter
+  .route("/:id/wishList")
+  .put(checkCustomContact, updateContactWishList);
 
 contactRouter
   .route("/:id/givenGifts")
