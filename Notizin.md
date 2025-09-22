@@ -194,3 +194,60 @@ const notificationSchema = new mongoose.Schema(
 ```
 
 ---
+## Nächste Schritte
+
+Sie können jetzt beginnen mit:
+
+1. **Erstellen der Schemas in Mongoose.**
+2. **Controllers ** 
+   CRUD:
+   Auth
+   Contact
+   Event
+   receivedGift
+   givenGifts
+
+   
+4. **Users Router**
+
+   - POST /users/register
+   - POST/users/login
+   - DELETE /users/logout
+   - GET /users/me
+   - PUT /users/me
+   - DELETE /users/me
+
+- GET /users/:id/receivedGifts (Get receivedGifts)
+- GET /users/:id/receivedGifts/:id (Get receivedGift)
+- POST /users/:id/receivedGifts (receivedGift hinzufügen)
+- PUT /users/:id/receivedGifts/:id (Update receivedGift)
+- DELETE /users/:id/receivedGifts/:id (Delete receivedGift)
+
+-  GET /users/:id/events
+-  POST /users/:id/events
+
+
+4. **Contacts Router**, z.B.:
+
+- GET /contacts (Get contacts)
+- GET /contacts/:id (Get contact)
+- POST /contacts (Kontakt hinzufügen) -> Middleware
+- PUT /contacts/:id (Update contact) -> Middleware
+- DELETE /contacts/:id (Delete contact) -> Middleware
+  
+---
+- GET /contacts/:id/givenGifts (Get givenGifts)
+- GET /contacts/:id/givenGifts/:id (Get givenGift)
+- POST /contacts/:id/givenGifts (givenGift hinzufügen)
+- PUT /contacts/:id/givenGifts/:id (Update givenGift)
+- DELETE /contacts/:id/givenGifts/:id (Delete givenGift)
+---
+
+- POST /contacts/:id/events (Event für Kontakt hinzufügen) -> Middleware
+- GET /contacts/:id/events (Events für Kontakt erhalten)
+- GET /contacts/:id/events/:id (Event für Kontakt erhalten)
+- PUT /contacts/:id/events/:id (Event für Kontakt wechseln)
+- DELETE /contacts/:id/events/:id (Event für Kontakt löschen)
+
+---
+

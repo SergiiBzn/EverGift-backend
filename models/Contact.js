@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const contactSchema = new Schema({
+  ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   contactType: {
     type: String,
     enum: ["user", "custom"],
@@ -32,5 +33,5 @@ const contactSchema = new Schema({
   // },
 });
 
-const Contact = model("contact", contactSchema);
+const Contact = model("Contact", contactSchema);
 export default Contact;

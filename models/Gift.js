@@ -6,5 +6,5 @@ const giftSchema = new Schema({
   date: { type: Date, required: true },
 });
 
-const Gift = model("gift", giftSchema);
+const Gift = model("Gift", giftSchema);
 export default Gift;

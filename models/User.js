@@ -25,7 +25,7 @@ const userSchema = new Schema({
     },
     tags: [String],
   },
-  wishList: [String],
+  wishList: [{ type: String }],
   receivedGifts: [
     {
       type: Schema.Types.ObjectId,
@@ -36,5 +36,5 @@ const userSchema = new Schema({
   events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 });
 
-const User = model("user", userSchema);
+const User = model("User", userSchema);
 export default User;
