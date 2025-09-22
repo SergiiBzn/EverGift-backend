@@ -217,13 +217,13 @@ Sie können jetzt beginnen mit:
    - PUT /users/me
    - DELETE /users/me
 
--GET /users/:id/receivedGifts (Get receivedGifts)
+- GET /users/:id/receivedGifts (Get receivedGifts)
 - GET /users/:id/receivedGifts/:id (Get receivedGift)
 - POST /users/:id/receivedGifts (receivedGift hinzufügen)
 - PUT /users/:id/receivedGifts/:id (Update receivedGift)
 - DELETE /users/:id/receivedGifts/:id (Delete receivedGift)
 
-- - GET /users/:id/events
+-  GET /users/:id/events
 
 
 4. **Contacts Router**, z.B.:
