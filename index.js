@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import "./db/index.js";
 import { errorHandler } from "./middlewares/index.js";
-import { userRouter, contactRouter } from "./routes/index.js";
+import { userRouter, contactRouter } from "./routers/index.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
