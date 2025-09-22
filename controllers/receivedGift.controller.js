@@ -1,10 +1,10 @@
-import ReceivedGift from '../models/receivedGift.js';
+import ReceivedGift from '../models/index.js';
 
 // GET /users/:id/receivedGifts
 export const getAllReceivedGifts = async (req, res) => {
   try {
-    const { id: userId } = req.params;
-    const gifts = await ReceivedGift.find({ ownerId: userId });
+    const userId = req.userId;
+    const gifts = await ReceivedGift.find({ ownerId: userId }).populate('gift');
     return res.status(200).json(gifts);
   } catch (err) {
     return res
@@ -16,8 +16,12 @@ export const getAllReceivedGifts = async (req, res) => {
 // GET /users/:id/receivedGifts/:giftId
 export const getReceivedGift = async (req, res) => {
   try {
-    const { id: userId, giftId } = req.params;
-    const gift = await ReceivedGift.findOne({ _id: giftId, ownerId: userId });
+    const { giftId } = req.params;
+    const userId = req.userId;
+    const gift = await ReceivedGift.findOne({
+      _id: giftId,
+      ownerId: userId,
+    }).populate('gift');
     if (!gift)
       return res.status(404).json({ message: 'Received gift not found' });
     return res.status(200).json(gift);
@@ -31,7 +35,7 @@ export const getReceivedGift = async (req, res) => {
 // POST /users/:id/receivedGifts
 export const createReceivedGift = async (req, res) => {
   try {
-    const { id: userId } = req.params;
+    const userId = req.userId;
     const payload = { ...req.body, ownerId: userId };
     const created = await ReceivedGift.create(payload);
     return res.status(201).json(created);
@@ -46,12 +50,13 @@ export const createReceivedGift = async (req, res) => {
 // PUT /users/:id/receivedGifts/:giftId
 export const updateReceivedGift = async (req, res) => {
   try {
-    const { id: userId, giftId } = req.params;
+    const { giftId } = req.params;
+    const userId = req.userId;
     const updated = await ReceivedGift.findOneAndUpdate(
       { _id: giftId, ownerId: userId },
       req.body,
       { new: true, runValidators: true }
-    );
+    ).populate('gift');
     if (!updated)
       return res.status(404).json({ message: 'Received gift not found' });
     return res.status(200).json(updated);
@@ -66,8 +71,8 @@ export const updateReceivedGift = async (req, res) => {
 // DELETE /users/:id/receivedGifts/:giftId
 export const deleteReceivedGift = async (req, res) => {
   try {
-
-    const { id: userId, giftId } = req.params;
+    const { giftId } = req.params;
+    const userId = req.userId;
     const deleted = await ReceivedGift.findOneAndDelete({
       _id: giftId,
       ownerId: userId,
