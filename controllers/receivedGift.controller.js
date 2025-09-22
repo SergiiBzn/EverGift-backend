@@ -1,4 +1,4 @@
-import ReceivedGift from '../models/index.js';
+import {ReceivedGift} from '../models/index.js';
 
 // GET /users/:id/receivedGifts
 export const getAllReceivedGifts = async (req, res) => {
