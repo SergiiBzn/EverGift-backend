@@ -224,6 +224,7 @@ Sie können jetzt beginnen mit:
 - DELETE /users/:id/receivedGifts/:id (Delete receivedGift)
 
 -  GET /users/:id/events
+-  POST /users/:id/events
 
 
 4. **Contacts Router**, z.B.:
