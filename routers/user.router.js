@@ -1,6 +1,13 @@
 import { Router } from 'express';
-import authenticate from '../middlewares/authenticate.js';
-import { deleteUser, login, logout, me, register, updateUser } from "../controllers/auth.controller.js";
+import authenticate from '../middlewares/index.js';
+import {
+  deleteUser,
+  login,
+  logout,
+  me,
+  register,
+  updateUser,
+} from '../controllers/auth.controller.js';
 import {
   getAllReceivedGifts,
   getReceivedGift,
