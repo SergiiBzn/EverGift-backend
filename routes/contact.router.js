@@ -1,5 +1,13 @@
 import { Router } from "express";
 import {
+  getAllGivenGifts,
+  getGivenGift,
+  createGivenGift,
+  updateGivenGift,
+  deleteGivenGift,
+} from "../controllers/givenGift.controller.js";
+
+import {
   getAllContacts,
   getContact,
   createContact,
