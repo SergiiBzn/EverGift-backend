@@ -22,7 +22,7 @@ userRouter
 
 // profile
 userRouter.route('/profile').put(authenticate, updateUserProfile);
-userRouter.route('/wishList').put(updateUserWishList);
+userRouter.route('/wishList').put(authenticate,updateUserWishList);
 
 userRouter
   .route('/:id/receivedGifts')
