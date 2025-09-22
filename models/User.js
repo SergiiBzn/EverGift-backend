@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 
+//********** ReceivedGift Schema **********/
 const receivedGiftSchema = new Schema({
   ownerId: {
     type: Schema.Types.ObjectId,
@@ -18,7 +19,7 @@ const receivedGiftSchema = new Schema({
 
 const ReceivedGift = model('ReceivedGift', receivedGiftSchema);
 
-//========================  User   ===================================================
+//********** User Schema **********/
 const userSchema = new Schema({
   email: {
     type: String,

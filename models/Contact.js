@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 
+//********** givenGift Schema **********/
 const givenGiftSchema = new Schema({
   contactId: {
     type: Schema.Types.ObjectId,
@@ -11,7 +12,7 @@ const givenGiftSchema = new Schema({
 
 const GivenGift = model('GivenGift', givenGiftSchema);
 
-//======================= Contact =================
+//********** contact Schema **********/
 
 const contactSchema = new Schema({
   ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
