@@ -15,17 +15,17 @@ const GivenGift = model('GivenGift', givenGiftSchema);
 //********** contact Schema **********/
 
 const contactSchema = new Schema({
-  ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   contactType: {
     type: String,
-    enum: ['user', 'custom'],
-    default: 'custom', //user ohne Konto (Kinder) -> Form
+    enum: ["user", "custom"],
+    default: "custom", //user ohne Konto (Kinder) -> Form
     required: true,
   },
 
   linkedUserId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
   },
 
   customProfil: {
@@ -37,8 +37,8 @@ const contactSchema = new Schema({
 
   note: { type: String },
   wishList: [{ type: String }],
-  givenGifts: [{ type: Schema.Types.ObjectId, ref: 'GivenGift' }],
-  eventList: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+  givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
+  eventList: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 
   //  status: {
   //   type: String,
@@ -47,5 +47,5 @@ const contactSchema = new Schema({
   // },
 });
 
-const Contact = model('Contact', contactSchema);
+const Contact = model("Contact", contactSchema);
 export default Contact;

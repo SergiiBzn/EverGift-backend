@@ -1,5 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
+<<<<<<< HEAD
 //********** ReceivedGift Schema **********/
 const receivedGiftSchema = new Schema({
   ownerId: {
@@ -20,6 +21,8 @@ const receivedGiftSchema = new Schema({
 const ReceivedGift = model('ReceivedGift', receivedGiftSchema);
 
 //********** User Schema **********/
+=======
+>>>>>>> 276e2cd3154d9aaf9288e3c14cde2f2f138ccb1d
 const userSchema = new Schema({
   email: {
     type: String,
@@ -34,7 +37,7 @@ const userSchema = new Schema({
   profil: {
     name: {
       type: String,
-      default: '',
+      default: "",
     },
     avatar: {
       type: String,
@@ -49,12 +52,12 @@ const userSchema = new Schema({
   receivedGifts: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'ReceivedGift',
+      ref: "ReceivedGift",
     },
   ],
-  contacts: [{ type: Schema.Types.ObjectId, ref: 'Contact' }],
-  events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+  contacts: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
+  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 });
 
-const User = model('User', userSchema);
+const User = model("User", userSchema);
 export default User;
