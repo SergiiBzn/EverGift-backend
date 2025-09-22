@@ -1,21 +1,28 @@
-import { Router } from "express";
+import { Router } from 'express';
+import {
+  getAllReceivedGifts,
+  getReceivedGift,
+  createReceivedGift,
+  updateReceivedGift,
+  deleteReceivedGift,
+} from '../controllers/receivedGift.controller.js';
 
 const userRouter = Router();
 
-userRouter.route("/register").post(register);
-userRouter.route("/login").post(login);
-userRouter.route("/logout").delete(logout);
-userRouter.route("/me").get(me).put(updateUser).delete(deleteUser);
+userRouter.route('/register').post(register);
+userRouter.route('/login').post(login);
+userRouter.route('/logout').delete(logout);
+userRouter.route('/me').get(me).put(updateUser).delete(deleteUser);
 
 userRouter
-  .route("/:id/receivedGifts")
+  .route('/:id/receivedGifts')
   .get(getAllReceivedGifts)
   .post(createReceivedGift);
 userRouter
-  .route("/:id/receivedGifts/:giftId")
+  .route('/:id/receivedGifts/:giftId')
   .get(getReceivedGift)
   .put(updateReceivedGift)
   .delete(deleteReceivedGift);
 
-userRouter.route("/:id/events").get(getAllEvents).post(createEvent);
+userRouter.route('/:id/events').get(getAllEvents).post(createEvent);
 export default userRouter;
