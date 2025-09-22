@@ -4,3 +4,5 @@ export { default as Contact } from './Contact.js';
 export { default as Event } from './Event.js';
 export { default as GivenGift } from './GivenGift.js';
 export { default as ReceivedGift } from './ReceivedGift.js';
+
+
