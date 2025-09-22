@@ -241,13 +241,6 @@ Sie können jetzt beginnen mit:
 - DELETE /contacts/:id/events/:id (Event für Kontakt löschen)
 
 ---
-
-- POST /contacts/:id/history (GiftHistory für Kontakt hinzufügen) -> Middleware
-- GET /contacts/:id/history (GiftHistory für Kontakt erhalten)
-- GET /contacts/:id/history/:id (GiftHistory für Kontakt erhalten)
-- PUT /contacts/:id/history/:id (GiftHistory für Kontakt wechseln)
-- DELETE /contacts/:id/history/:id (GiftHistory für Kontakt löschen)
-
 5. **GiftEvents Endpoints**
 
    - GET /events
