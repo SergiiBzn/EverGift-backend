@@ -8,6 +8,7 @@ import {
   updateReceivedGift,
   deleteReceivedGift,
 } from '../controllers/receivedGift.controller.js';
+import { updateUserProfile, updateUserWishList } from '../controllers/user.controller.js';
 
 const userRouter = Router();
 
@@ -33,6 +34,8 @@ userRouter
   .get(authenticate, getReceivedGift)
   .put(authenticate, updateReceivedGift)
   .delete(authenticate, deleteReceivedGift);
+
+  // TODO: events
 
 userRouter
   .route('/:id/events')
