@@ -1,4 +1,4 @@
-import Contact from "../models/index.js";
+import { Contact } from "../models/index.js";
 
 // get all contacts for a user
 export const getAllContacts = async (req, res) => {
