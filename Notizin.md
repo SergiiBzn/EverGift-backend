@@ -199,7 +199,16 @@ const notificationSchema = new mongoose.Schema(
 Sie können jetzt beginnen mit:
 
 1. **Erstellen der Schemas in Mongoose.**
-2. **Users Endpoints**
+2. **Controllers ** 
+   CRUD:
+   Auth
+   Contact
+   Event
+   receivedGift
+   givenGifts
+
+   
+4. **Users Router**
 
    - POST /users/register
    - POST/users/login
@@ -208,30 +217,29 @@ Sie können jetzt beginnen mit:
    - PUT /users/me
    - DELETE /users/me
 
-3. **receivedGifts Endpoints**, z.B.:
+-GET /users/:id/receivedGifts (Get receivedGifts)
+- GET /users/:id/receivedGifts/:id (Get receivedGift)
+- POST /users/:id/receivedGifts (receivedGift hinzufügen)
+- PUT /users/:id/receivedGifts/:id (Update receivedGift)
+- DELETE /users/:id/receivedGifts/:id (Delete receivedGift)
 
-- GET /receivedGifts (Get receivedGifts)
-- GET /receivedGifts/:id (Get receivedGift)
-- POST /receivedGifts (receivedGift hinzufügen)
-- PUT /receivedGifts/:id (Update receivedGift)
-- DELETE /receivedGifts/:id (Delete receivedGift)
+- - GET /users/:id/events
 
-3. **givenGifts Endpoints**, z.B.:
 
-- GET givenGifts (Get givenGifts)
-- GET /givenGifts/:id (Get givenGift)
-- POST /givenGifts (givenGift hinzufügen)
-- PUT /givenGifts/:id (Update givenGift)
-- DELETE /givenGifts/:id (Delete givenGift)
-
-4. **Contacts Endpoints**, z.B.:
+4. **Contacts Router**, z.B.:
 
 - GET /contacts (Get contacts)
 - GET /contacts/:id (Get contact)
 - POST /contacts (Kontakt hinzufügen) -> Middleware
 - PUT /contacts/:id (Update contact) -> Middleware
 - DELETE /contacts/:id (Delete contact) -> Middleware
-
+  
+---
+- GET /contacts/:id/givenGifts (Get givenGifts)
+- GET /contacts/:id/givenGifts/:id (Get givenGift)
+- POST /contacts/:id/givenGifts (givenGift hinzufügen)
+- PUT /contacts/:id/givenGifts/:id (Update givenGift)
+- DELETE /contacts/:id/givenGifts/:id (Delete givenGift)
 ---
 
 - POST /contacts/:id/events (Event für Kontakt hinzufügen) -> Middleware
@@ -241,6 +249,4 @@ Sie können jetzt beginnen mit:
 - DELETE /contacts/:id/events/:id (Event für Kontakt löschen)
 
 ---
-5. **GiftEvents Endpoints**
 
-   - GET /events
