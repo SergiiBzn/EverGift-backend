@@ -30,7 +30,7 @@ export const register = async (req, res) => {
     password: hashedPassword
   })).toObject();
 
-  // delete password from the user object to be sent to the back to the client
+  // delete password from the user object to be sent back to the client
   delete user.password;
   res.json(user);
 
