@@ -1,16 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
-//********** givenGift Schema **********/
-const givenGiftSchema = new Schema({
-  contactId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Contact',
-    required: true,
-  },
-  gift: { type: Schema.Types.ObjectId, ref: 'Gift' },
-});
-
-const GivenGift = model('GivenGift', givenGiftSchema);
+const GivenGift = model("GivenGift", givenGiftSchema);
 
 //********** contact Schema **********/
 

@@ -1,9 +1,9 @@
-import Contact from "../models/contact.model.js";
+import Contact from "../models/index.js";
 
 // get all contacts for a user
 export const getAllContacts = async (req, res) => {
   const ownerId = req.userId;
-  const contacts = await Contact.findAll({ ownerId });
+  const contacts = await Contact.find({ ownerId });
   res.json(contacts);
 };
 
@@ -26,11 +26,16 @@ export const getContact = async (req, res) => {
   const ownerId = req.userId;
   const { id } = req.params;
 
-  const contact = await Contact.findOne({ _id: id, ownerId })
-    .populate("givenGifts")
-    .populate("eventList");
-
+  const contact = await Contact.findOne({ _id: id, ownerId });
   if (!contact) throw new Error("Contact not found", { cause: 404 });
+  const populations = [{ path: "givenGifts" }, { path: "eventList" }];
+  if (contact.contactType === "user" && contact.linkedUserId) {
+    populations.push({
+      path: "linkedUserId",
+      select: "email profil wishList",
+    });
+  }
+  await contact.populate(populations);
 
   res.json(contact);
 };
@@ -88,9 +93,8 @@ export const updateContactWishList = async (req, res) => {
 // delete a contact by ID
 export const deleteContact = async (req, res) => {
   const ownerId = req.userId;
-  const { _id } = req.params;
-  const contact = await Contact.findOne({ where: { _id, ownerId } });
+  const { id } = req.params;
+  const contact = await Contact.findOneAndDelete({ _id: id, ownerId });
   if (!contact) throw new Error("Contact not found", { cause: 404 });
-  await contact.destroy();
   res.json({ message: "Contact deleted" });
 };
