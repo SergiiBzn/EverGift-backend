@@ -18,10 +18,11 @@ const userSchema = new Schema({
     },
     avatar: {
       type: String,
+      default:""
     },
     birthday: {
       type: Date,
-      required: true,
+      default: "",
     },
     tags: [String],
   },

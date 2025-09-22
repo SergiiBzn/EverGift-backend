@@ -20,6 +20,10 @@ userRouter
   .put(authenticate, updateUser)
   .delete(authenticate, deleteUser);
 
+// profile
+userRouter.route('/profile').put(authenticate, updateUserProfile);
+userRouter.route('/wishList').put(updateUserWishList);
+
 userRouter
   .route('/:id/receivedGifts')
   .get(authenticate, getAllReceivedGifts)

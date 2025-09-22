@@ -77,3 +77,32 @@ export const deleteGivenGift = async (req, res) => {
       .json({ message: "Failed to delete given gift", error: err.message });
   }
 };
+
+
+//********** GET /contacts/:id/events **********
+export const getAllEvents = async (req, res) => {
+  /* try {
+    const { id: contactId } = req.params;
+    const events = await Event.find({ contactId });
+    return res.json(events);
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch events", error: err.message });
+  } */
+};
+
+//********** POST /contacts/:id/events **********
+export const createEvent = async (req, res) => {
+  /* try {
+    const { id: contactId } = req.params;
+    const payload = { ...req.body, contactId };
+    const event = await Event.create(payload);
+    return res.status(201).json(event);
+  } catch (err) {
+    const status = err?.name === "ValidationError" ? 400 : 500;
+    return res
+      .status(status)
+      .json({ message: "Failed to create event", error: err.message });
+  } */
+};

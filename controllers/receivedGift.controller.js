@@ -66,6 +66,7 @@ export const updateReceivedGift = async (req, res) => {
 // DELETE /users/:id/receivedGifts/:giftId
 export const deleteReceivedGift = async (req, res) => {
   try {
+
     const { id: userId, giftId } = req.params;
     const deleted = await ReceivedGift.findOneAndDelete({
       _id: giftId,
