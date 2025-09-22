@@ -1,7 +1,5 @@
 import { Schema, model } from "mongoose";
 
-const GivenGift = model("GivenGift", givenGiftSchema);
-
 //********** contact Schema **********/
 
 const contactSchema = new Schema({
