@@ -9,10 +9,12 @@ const receivedGiftSchema = new Schema({
   contactType: {
     type: String,
     enum: ["user", "custom"],
+    default: "custom",
     required: true,
   },
   gift: { type: Schema.Types.ObjectId, ref: "Gift" },
-  from: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
+
+  // from: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
   fromName: { type: Array, default: [] }, // custom
 });
 
