@@ -1,14 +1,14 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
 const eventSchema = new Schema({
   ownerId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   contactId: {
     type: Schema.Types.ObjectId,
-    ref: 'Contact',
+    ref: "Contact",
     required: true,
   },
   title: {
@@ -17,18 +17,22 @@ const eventSchema = new Schema({
   },
   gift: {
     type: Schema.Types.ObjectId,
-    ref: 'Gift',
+    ref: "Gift",
   },
   isRepeat: {
     type: String,
-    enum: ['yearly', 'none'],
-    default: 'none',
+    enum: ["yearly", "none"],
+    default: "none",
   },
   isPinned: {
     type: Boolean,
     default: false,
   },
+  date: {
+    type: Date,
+    required: true,
+  },
 });
 
-const Event = model('Event', eventSchema);
+const Event = model("Event", eventSchema);
 export default Event;

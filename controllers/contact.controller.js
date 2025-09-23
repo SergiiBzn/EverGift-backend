@@ -1,6 +1,6 @@
 /** @format */
 
-import { Contact, GivenGift, Event, User } from "../models/index.js";
+import { Contact, GivenGift, Event, User, Gift } from "../models/index.js";
 
 // get all contacts for a user
 export const getAllContacts = async (req, res) => {
@@ -217,21 +217,41 @@ export const updateContactWishList = async (req, res) => {
 export const deleteContact = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
-  const deleted = await Contact.findOneAndDelete({ _id: contactId, ownerId });
-  if (!deleted) throw new Error("Contact not found", { cause: 404 });
-  if (deleted.givenGifts?.length) {
+
+  const contact = await Contact.findOne({ _id: contactId, ownerId });
+  if (!contact) throw new Error("Contact not found", { cause: 404 });
+
+  // remove all givenGifts
+  if (contact.givenGifts?.length) {
     // delete all givenGifts associated with the contact
     await Promise.all(
-      deleted.givenGifts.map((givenGiftId) =>
+      contact.givenGifts.map((givenGiftId) =>
         GivenGift.findByIdAndDelete(givenGiftId)
       )
     );
   }
-  if (deleted.eventList?.length) {
-    // delete all events associated with the contact
-    await Promise.all(
-      deleted.eventList.map((eventId) => Event.findByIdAndDelete(eventId))
-    );
+
+  // remove all events and associated gifts
+  if (contact.events?.length) {
+    const eventsToDelete = await Event.find({ _id: { $in: contact.events } });
+
+    const giftIds = eventsToDelete
+      .map((event) => event.gift)
+      .filter((giftId) => giftId !== null); // array of gift ids to delete
+    // delete all events and gifts associated with the contact
+    await Gift.deleteMany({ _id: { $in: giftIds } });
+    await Event.deleteMany({ _id: { $in: contact.events } });
+
+    // update user's events array
+    await User.findByIdAndUpdate(contact.ownerId, {
+      $pull: { events: { $in: contact.events } },
+    });
   }
-  res.json({ message: "Contact deleted" });
+  // remove contact from user's contacts array
+  await User.findByIdAndUpdate(ownerId, {
+    $pull: { contacts: contactId },
+  });
+  // finally delete the contact
+  await Contact.findByIdAndDelete(contactId);
+  return res.json({ message: "Contact deleted" });
 };

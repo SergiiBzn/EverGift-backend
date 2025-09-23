@@ -1,98 +1,125 @@
-import { Event, Contact } from '../models/index.js';
+import { Event, Contact, Gift, User } from "../models/index.js";
 
-// GET /contacts/:id/events
+// GET /contacts/:contactId/events
 export const getAllEvents = async (req, res) => {
   try {
-    const { id: contactId } = req.params;
-    const events = await Event.find({ contactId }).populate('gift');
+    const { contactId } = req.params;
+    const events = await Event.find({ contactId }).populate("gift");
     return res.status(200).json(events);
   } catch (err) {
     return res
       .status(500)
-      .json({ message: 'Failed to fetch events', error: err.message });
+      .json({ message: "Failed to fetch events", error: err.message });
   }
 };
 
-// GET /contacts/:id/events/:eventId
+// GET /contacts/:contactId/events/:eventId
 export const getEvent = async (req, res) => {
   try {
-    const { id: contactId, eventId } = req.params;
+    const { contactId, eventId } = req.params;
     const event = await Event.findOne({ _id: eventId, contactId }).populate(
-      'gift'
+      "gift"
     );
-    if (!event) return res.status(404).json({ message: 'Event not found' });
+    if (!event) return res.status(404).json({ message: "Event not found" });
     return res.status(200).json(event);
   } catch (err) {
     return res
       .status(500)
-      .json({ message: 'Failed to fetch event', error: err.message });
+      .json({ message: "Failed to fetch event", error: err.message });
   }
 };
 
-// POST /contacts/:id/events
+// POST /contacts/:contactId/events
 export const createEvent = async (req, res) => {
   try {
-    const { id: contactId } = req.params;
+    const { contactId } = req.params;
+    const { gift, date } = req.body;
 
     const contact = await Contact.findById(contactId);
-    if (!contact) return res.status(404).json({ message: 'Contact not found' });
+    if (!contact) return res.status(404).json({ message: "Contact not found" });
 
+    // if gift is provided, create it first
+    const createdGift = gift ? await Gift.create({ ...gift, date }) : null;
+    // create event with reference to the created gift
     const payload = {
       ...req.body,
       contactId,
       ownerId: contact.ownerId,
+      gift: createdGift ? createdGift._id : null,
     };
 
     const created = await Event.create(payload);
 
     await Contact.findByIdAndUpdate(contactId, {
-      $addToSet: { eventList: created._id },
+      $push: { events: created._id },
     });
 
-    const populated = await created.populate('gift');
+    // update events in User model
+    await User.findByIdAndUpdate(contact.ownerId, {
+      $push: { events: created._id },
+    });
+
+    const populated = await created.populate("gift");
     return res.status(201).json(populated);
   } catch (err) {
-    const status = err?.name === 'ValidationError' ? 400 : 500;
+    const status = err?.name === "ValidationError" ? 400 : 500;
     return res
       .status(status)
-      .json({ message: 'Failed to create event', error: err.message });
+      .json({ message: "Failed to create event", error: err.message });
   }
 };
 
-// PUT /contacts/:id/events/:eventId
+// PUT /contacts/:contactId/events/:eventId
 export const updateEvent = async (req, res) => {
   try {
-    const { id: contactId, eventId } = req.params;
+    const { contactId, eventId } = req.params;
+    const { gift, date } = req.body;
+    // if gift is provided, create it first
+    if (gift) {
+      const createdGift = await Gift.create({ ...gift, date });
+      req.body.gift = createdGift._id;
+    }
+
     const updated = await Event.findOneAndUpdate(
       { _id: eventId, contactId },
       req.body,
       { new: true, runValidators: true }
-    ).populate('gift');
-    if (!updated) return res.status(404).json({ message: 'Event not found' });
+    ).populate("gift");
+    if (!updated) return res.status(404).json({ message: "Event not found" });
+
     return res.status(200).json(updated);
   } catch (err) {
-    const status = err?.name === 'ValidationError' ? 400 : 500;
+    const status = err?.name === "ValidationError" ? 400 : 500;
     return res
       .status(status)
-      .json({ message: 'Failed to update event', error: err.message });
+      .json({ message: "Failed to update event", error: err.message });
   }
 };
 
-// DELETE /contacts/:id/events/:eventId
+// DELETE /contacts/:contactId/events/:eventId
 export const deleteEvent = async (req, res) => {
   try {
-    const { id: contactId, eventId } = req.params;
+    const { contactId, eventId } = req.params;
     const deleted = await Event.findOneAndDelete({ _id: eventId, contactId });
-    if (!deleted) return res.status(404).json({ message: 'Event not found' });
+    if (!deleted) return res.status(404).json({ message: "Event not found" });
 
+    // if gift is associated with the event, delete it
+    if (deleted.gift) {
+      await Gift.findByIdAndDelete(deleted.gift);
+    }
+
+    // remove event reference from contact
     await Contact.findByIdAndUpdate(contactId, {
-      $pull: { eventList: deleted._id },
+      $pull: { events: deleted._id },
     });
-
+    // remove event reference from user
+    await User.findByIdAndUpdate(deleted.ownerId, {
+      $pull: { events: deleted._id },
+    });
     return res.status(204).send();
   } catch (err) {
     return res
       .status(500)
-      .json({ message: 'Failed to delete event', error: err.message });
+      .json({ message: "Failed to delete event", error: err.message });
   }
 };
