@@ -1,5 +1,6 @@
+/** @format */
+
 import { Router } from "express";
-import { authenticate } from "../middlewares/index.js";
 import {
   deleteUser,
   login,
@@ -9,25 +10,33 @@ import {
   updateUser,
 } from "../controllers/auth.controller.js";
 import {
+  createReceivedGift,
+  deleteReceivedGift,
   getAllReceivedGifts,
   getReceivedGift,
-  createReceivedGift,
   updateReceivedGift,
-  deleteReceivedGift,
 } from "../controllers/receivedGift.controller.js";
 import {
   updateUserProfile,
   updateUserWishList,
 } from "../controllers/user.controller.js";
+import { authenticate } from "../middlewares/index.js";
+import validate from "../middlewares/validate.js";
+import {
+  loginSchema,
+  registerSchema,
+  updateUserSchema,
+} from "../schemas/user.schema.js";
 const userRouter = Router();
 
-userRouter.route("/register").post(register);
-userRouter.route("/login").post(login);
+//********** Auth users **********
+userRouter.route("/register").post(validate(registerSchema), register);
+userRouter.route("/login").post(validate(loginSchema), login);
 userRouter.route("/logout").delete(logout);
 userRouter
   .route("/me")
   .get(authenticate, me)
-  .put(authenticate, updateUser)
+  .put(authenticate, validate(updateUserSchema), updateUser)
   .delete(authenticate, deleteUser);
 
 //********** profile **********
