@@ -1,15 +1,15 @@
-import {GivenGift} from '../models/index.js';
+import { GivenGift } from '../models/index.js';
 
 // GET /contacts/:id/givenGifts
 export const getAllGivenGifts = async (req, res) => {
   try {
     const { id: contactId } = req.params;
-    const gifts = await GivenGift.find({ contactId }).populate("gift");
+    const gifts = await GivenGift.find({ contactId }).populate('gift');
     return res.status(200).json(gifts);
   } catch (err) {
     return res
       .status(500)
-      .json({ message: "Failed to fetch given gifts", error: err.message });
+      .json({ message: 'Failed to fetch given gifts', error: err.message });
   }
 };
 
@@ -18,14 +18,14 @@ export const getGivenGift = async (req, res) => {
   try {
     const { id: contactId, giftId } = req.params;
     const gift = await GivenGift.findOne({ _id: giftId, contactId }).populate(
-      "gift"
+      'gift'
     );
-    if (!gift) return res.status(404).json({ message: "Given gift not found" });
+    if (!gift) return res.status(404).json({ message: 'Given gift not found' });
     return res.status(200).json(gift);
   } catch (err) {
     return res
       .status(500)
-      .json({ message: "Failed to fetch given gift", error: err.message });
+      .json({ message: 'Failed to fetch given gift', error: err.message });
   }
 };
 
@@ -37,10 +37,10 @@ export const createGivenGift = async (req, res) => {
     const created = await GivenGift.create(payload);
     return res.status(201).json(created);
   } catch (err) {
-    const status = err?.name === "ValidationError" ? 400 : 500;
+    const status = err?.name === 'ValidationError' ? 400 : 500;
     return res
       .status(status)
-      .json({ message: "Failed to create given gift", error: err.message });
+      .json({ message: 'Failed to create given gift', error: err.message });
   }
 };
 
@@ -52,15 +52,15 @@ export const updateGivenGift = async (req, res) => {
       { _id: giftId, contactId },
       req.body,
       { new: true, runValidators: true }
-    ).populate("gift");
+    ).populate('gift');
     if (!updated)
-      return res.status(404).json({ message: "Given gift not found" });
+      return res.status(404).json({ message: 'Given gift not found' });
     return res.status(200).json(updated);
   } catch (err) {
-    const status = err?.name === "ValidationError" ? 400 : 500;
+    const status = err?.name === 'ValidationError' ? 400 : 500;
     return res
       .status(status)
-      .json({ message: "Failed to update given gift", error: err.message });
+      .json({ message: 'Failed to update given gift', error: err.message });
   }
 };
 
@@ -73,12 +73,12 @@ export const deleteGivenGift = async (req, res) => {
       contactId,
     });
     if (!deleted)
-      return res.status(404).json({ message: "Given gift not found" });
+      return res.status(404).json({ message: 'Given gift not found' });
     return res.status(204).send();
   } catch (err) {
     return res
       .status(500)
-      .json({ message: "Failed to delete given gift", error: err.message });
+      .json({ message: 'Failed to delete given gift', error: err.message });
   }
 };
 

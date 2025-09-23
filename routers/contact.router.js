@@ -16,6 +16,13 @@ import {
   updateContactWishList,
 } from "../controllers/contact.controller.js";
 import { checkCustomContact } from "../middlewares/index.js";
+import {
+  getAllEvents,
+  getEvent,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from "../controllers/event.controller.js";
 
 const contactRouter = Router();
 
@@ -48,11 +55,11 @@ contactRouter
   .put(updateGivenGift)
   .delete(deleteGivenGift);
 
-// contactRouter.route("/:id/events").get(getAllEvents).post(createEvent);
-// contactRouter
-//   .route("/:id/events/:eventId")
-//   .get(getEvent)
-//   .put(updateEvent)
-//   .delete(deleteEvent);
+contactRouter.route("/:id/events").get(getAllEvents).post(createEvent);
+contactRouter
+  .route("/:id/events/:eventId")
+  .get(getEvent)
+  .put(updateEvent)
+  .delete(deleteEvent);
 
 export default contactRouter;
