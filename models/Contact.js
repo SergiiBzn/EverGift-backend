@@ -17,9 +17,19 @@ const contactSchema = new Schema({
   },
 
   customProfil: {
-    name: { type: String, required: true },
+    name: {
+      type: String,
+      required: function () {
+        return this.contactType === "custom";
+      },
+    },
     avatar: { type: String },
-    birthday: { type: Date, required: true },
+    birthday: {
+      type: Date,
+      required: function () {
+        return this.contactType === "custom";
+      },
+    },
     tags: [String],
   },
 
