@@ -1,4 +1,4 @@
-import { ReceivedGift, Gift } from "../models/index.js";
+import { ReceivedGift, Gift, User } from "../models/index.js";
 
 // GET /receivedGifts
 export const getAllReceivedGifts = async (req, res) => {
@@ -43,6 +43,12 @@ export const createReceivedGift = async (req, res) => {
     payload = { ...payload, gift: createGift._id };
 
     const created = await ReceivedGift.create(payload);
+
+    // find user and update its receivedGifts array
+    await User.findByIdAndUpdate(userId, {
+      $push: { receivedGifts: created._id },
+    });
+
     const populated = await created.populate("gift");
     return res.status(201).json(populated);
   } catch (err) {
