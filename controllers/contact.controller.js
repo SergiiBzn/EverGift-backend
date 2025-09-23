@@ -1,9 +1,9 @@
-import { Contact, GivenGift, Event } from "../models/index.js";
+import { Contact, GivenGift, Event, User } from "../models/index.js";
 
 // get all contacts for a user
 export const getAllContacts = async (req, res) => {
   const ownerId = req.userId;
-  const contacts = await Contact.find({ ownerId });
+  const contacts = await Contact.findById({ ownerId });
   res.json(contacts);
 };
 
@@ -12,11 +12,16 @@ export const createContact = async (req, res) => {
   const ownerId = req.userId;
   let contact;
   const { contactType, linkedUserId, customProfil } = req.body;
-  if (contactType === "user" && !linkedUserId) {
-    throw new Error("linkedUserId is required for contactType 'user'", {
-      cause: 400,
-    });
+  if (contactType === "user") {
+    if (!linkedUserId) {
+      throw new Error("linkedUserId is required for contactType 'user'", {
+        cause: 400,
+      });
+    } else if (linkedUserId === ownerId) {
+      throw new Error("Cannot add yourself as a contact", { cause: 400 });
+    }
   }
+
   if (
     contactType === "custom" &&
     (!customProfil?.name || !customProfil?.birthday)
@@ -34,6 +39,29 @@ export const createContact = async (req, res) => {
     linkedUserId: contactType === "user" ? linkedUserId : undefined,
     customProfil: contactType === "custom" ? customProfil : undefined,
   });
+  await contact.populate("linkedUserId");
+  // if contact is of type 'user' and linkedUserId is provided and unique, add the contact to the user's contacts list
+
+  // linkedUserId
+  const user = await User.findById(ownerId);
+  const { contacts } = user;
+  // contacts is an array of ObjectId of Contact, in Contact can the linkedUserId be found and match the linkedUserId provided in the request body
+  const isAlreadyContact = contacts.some(async (contactId) => {
+    const contact = await Contact.findById(contactId);
+    return (
+      contact.contactType === "user" &&
+      contact.linkedUserId?.toString() === linkedUserId
+    );
+  });
+
+  if (contactType === "user" && isAlreadyContact) {
+    throw new Error("This user is already in your contacts", { cause: 400 });
+  }
+
+  await User.findByIdAndUpdate(ownerId, {
+    $push: { contacts: contact._id },
+  });
+
   res.status(201).json(contact);
 };
 
@@ -85,12 +113,14 @@ export const updateContactProfile = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
   const { customProfil } = req.body;
+  console.log(customProfil);
 
   const contact = await Contact.findOneAndUpdate(
     { _id: contactId, ownerId },
     { customProfil },
     { new: true }
   );
+
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
   res.json(contact);

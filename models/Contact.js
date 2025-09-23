@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { required } from "zod/mini";
 
 //********** contact Schema **********/
 
@@ -7,8 +8,8 @@ const contactSchema = new Schema({
   contactType: {
     type: String,
     enum: ["user", "custom"],
-    default: "custom", //user ohne Konto (Kinder) -> Form
-    required: true,
+    default: "custom",
+    required: true, //user ohne Konto (Kinder) -> Form
   },
 
   linkedUserId: {
@@ -30,11 +31,16 @@ const contactSchema = new Schema({
         return this.contactType === "custom";
       },
     },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      default: "other",
+    },
     tags: [String],
   },
 
   note: { type: String },
-  wishList: [{ type: String }],
+  wishList: { type: Array, default: [] },
   givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
   eventList: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 
