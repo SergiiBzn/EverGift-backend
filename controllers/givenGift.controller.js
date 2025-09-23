@@ -1,4 +1,4 @@
-import {GivenGift} from '../models/index.js';
+import { GivenGift } from "../models/index.js";
 
 // GET /contacts/:id/givenGifts
 export const getAllGivenGifts = async (req, res) => {
@@ -18,7 +18,7 @@ export const getGivenGift = async (req, res) => {
   try {
     const { id: contactId, giftId } = req.params;
     const gift = await GivenGift.findOne({ _id: giftId, contactId }).populate(
-      "gift"
+      "gift",
     );
     if (!gift) return res.status(404).json({ message: "Given gift not found" });
     return res.status(200).json(gift);
@@ -51,7 +51,7 @@ export const updateGivenGift = async (req, res) => {
     const updated = await GivenGift.findOneAndUpdate(
       { _id: giftId, contactId },
       req.body,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).populate("gift");
     if (!updated)
       return res.status(404).json({ message: "Given gift not found" });

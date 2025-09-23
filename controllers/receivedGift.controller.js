@@ -1,4 +1,4 @@
-import {ReceivedGift} from '../models/index.js';
+import { ReceivedGift } from "../models/index.js";
 
 // GET /users/:id/receivedGifts
 export const getAllReceivedGifts = async (req, res) => {
@@ -55,7 +55,7 @@ export const updateReceivedGift = async (req, res) => {
     const updated = await ReceivedGift.findOneAndUpdate(
       { _id: giftId, ownerId: userId },
       req.body,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).populate("gift");
     if (!updated)
       return res.status(404).json({ message: "Received gift not found" });

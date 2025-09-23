@@ -49,7 +49,7 @@ export const updateContactProfile = async (req, res) => {
   const contact = await Contact.findOneAndUpdate(
     { _id: id, ownerId },
     { customProfil },
-    { new: true }
+    { new: true },
   );
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
@@ -65,7 +65,7 @@ export const updateContactNote = async (req, res) => {
   const contact = await Contact.findOneAndUpdate(
     { _id: id, ownerId },
     { note },
-    { new: true }
+    { new: true },
   );
   if (!contact) throw new Error("Contact not found", { cause: 404 });
   res.json(contact);
@@ -82,7 +82,7 @@ export const updateContactWishList = async (req, res) => {
   const contact = await Contact.findOneAndUpdate(
     { _id: id, ownerId },
     { wishList },
-    { new: true }
+    { new: true },
   );
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
