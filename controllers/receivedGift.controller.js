@@ -1,6 +1,6 @@
-import {ReceivedGift} from '../models/index.js';
+import { ReceivedGift, Gift } from "../models/index.js";
 
-// GET /users/:id/receivedGifts
+// GET /receivedGifts
 export const getAllReceivedGifts = async (req, res) => {
   try {
     const userId = req.userId;
@@ -13,13 +13,13 @@ export const getAllReceivedGifts = async (req, res) => {
   }
 };
 
-// GET /users/:id/receivedGifts/:giftId
+// GET /receivedGifts/:receivedGiftId
 export const getReceivedGift = async (req, res) => {
   try {
-    const { giftId } = req.params;
+    const { receivedGiftId } = req.params;
     const userId = req.userId;
     const gift = await ReceivedGift.findOne({
-      _id: giftId,
+      _id: receivedGiftId,
       ownerId: userId,
     }).populate("gift");
     if (!gift)
@@ -32,13 +32,19 @@ export const getReceivedGift = async (req, res) => {
   }
 };
 
-// POST /users/:id/receivedGifts
+// POST /receivedGifts
 export const createReceivedGift = async (req, res) => {
   try {
     const userId = req.userId;
-    const payload = { ...req.body, ownerId: userId };
+    let payload = { ...req.body, ownerId: userId };
+
+    const { gift } = req.body;
+    const createGift = await Gift.create(gift);
+    payload = { ...payload, gift: createGift._id };
+
     const created = await ReceivedGift.create(payload);
-    return res.status(201).json(created);
+    const populated = await created.populate("gift");
+    return res.status(201).json(populated);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;
     return res
@@ -47,19 +53,36 @@ export const createReceivedGift = async (req, res) => {
   }
 };
 
-// PUT /users/:id/receivedGifts/:giftId
+// PUT /receivedGifts/:receivedGiftId
 export const updateReceivedGift = async (req, res) => {
   try {
-    const { giftId } = req.params;
+    const { receivedGiftId } = req.params;
+    const { gift, fromName } = req.body;
     const userId = req.userId;
-    const updated = await ReceivedGift.findOneAndUpdate(
-      { _id: giftId, ownerId: userId },
-      req.body,
-      { new: true, runValidators: true }
-    ).populate("gift");
-    if (!updated)
-      return res.status(404).json({ message: "Received gift not found" });
-    return res.status(200).json(updated);
+
+    const receivedGift = await ReceivedGift.findOne({
+      _id: receivedGiftId,
+      ownerId: userId,
+    });
+
+    if (!receivedGift)
+      throw new Error("Received gift not found", { cause: 404 });
+
+    const updatedGift = await Gift.findByIdAndUpdate(
+      receivedGift.gift._id,
+      gift,
+      { new: true }
+    );
+    if (!updatedGift) throw new Error("Gift not found", { cause: 404 });
+
+    if (fromName) {
+      receivedGift.fromName = fromName;
+    }
+
+    const saved = await receivedGift.save();
+    const populated = await saved.populate("gift");
+
+    return res.status(200).json(populated);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;
     return res
@@ -68,17 +91,22 @@ export const updateReceivedGift = async (req, res) => {
   }
 };
 
-// DELETE /users/:id/receivedGifts/:giftId
+// DELETE /receivedGifts/:receivedGiftId
 export const deleteReceivedGift = async (req, res) => {
   try {
-    const { giftId } = req.params;
+    const { receivedGiftId } = req.params;
     const userId = req.userId;
     const deleted = await ReceivedGift.findOneAndDelete({
-      _id: giftId,
+      _id: receivedGiftId,
       ownerId: userId,
     });
+
     if (!deleted)
       return res.status(404).json({ message: "Received gift not found" });
+
+    if (deleted.gift) {
+      await Gift.findByIdAndDelete(deleted.gift._id);
+    }
     return res.status(204).send();
   } catch (err) {
     return res
