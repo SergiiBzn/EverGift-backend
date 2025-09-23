@@ -30,16 +30,17 @@ userRouter
   .put(authenticate, updateUser)
   .delete(authenticate, deleteUser);
 
-// profile
+//********** profile **********
 userRouter.route("/profile").put(authenticate, updateUserProfile);
 userRouter.route("/wishList").put(authenticate, updateUserWishList);
 
+//********** receivedGifts **********
 userRouter
-  .route("/:id/receivedGifts")
+  .route("/receivedGifts")
   .get(authenticate, getAllReceivedGifts)
   .post(authenticate, createReceivedGift);
 userRouter
-  .route("/:id/receivedGifts/:giftId")
+  .route("/receivedGifts/:receivedGiftId")
   .get(authenticate, getReceivedGift)
   .put(authenticate, updateReceivedGift)
   .delete(authenticate, deleteReceivedGift);
