@@ -42,7 +42,7 @@ const contactSchema = new Schema({
   note: { type: String },
   wishList: { type: Array, default: [] },
   givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
-  eventList: [{ type: Schema.Types.ObjectId, ref: "Event" }],
+  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 
   //  status: {
   //   type: String,
