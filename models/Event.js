@@ -1,26 +1,34 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const eventSchema = new Schema({
   ownerId: {
-    type: Schema.Types.ObjectId, ref: "User", required: true
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
   contactId: {
-    type: Schema.Types.ObjectId, ref: "Contact", required: true
+    type: Schema.Types.ObjectId,
+    ref: 'Contact',
+    required: true,
   },
   title: {
-    type: String, required: true
+    type: String,
+    required: true,
   },
   gift: {
-    type: Schema.Types.ObjectId, ref: "Gift"
+    type: Schema.Types.ObjectId,
+    ref: 'Gift',
   },
   isRepeat: {
-    type: String, enum: ["yearly", "none"], default: "none"
+    type: String,
+    enum: ['yearly', 'none'],
+    default: 'none',
   },
   isPinned: {
-    type: Boolean, default: false
+    type: Boolean,
+    default: false,
   },
 });
 
-const Event = model("Event", eventSchema);
+const Event = model('Event', eventSchema);
 export default Event;
-
