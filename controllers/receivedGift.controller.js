@@ -1,3 +1,5 @@
+/** @format */
+
 import { ReceivedGift, Gift, User } from "../models/index.js";
 
 // GET /receivedGifts

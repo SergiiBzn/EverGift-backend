@@ -1,3 +1,5 @@
+/** @format */
+
 import { Contact, GivenGift, Event, User, Gift } from "../models/index.js";
 
 // get all contacts for a user

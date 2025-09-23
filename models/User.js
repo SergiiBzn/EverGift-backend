@@ -1,3 +1,5 @@
+/** @format */
+
 import { Schema, model } from "mongoose";
 
 const userSchema = new Schema({
@@ -18,7 +20,7 @@ const userSchema = new Schema({
     },
     avatar: {
       type: String,
-      default:""
+      default: "",
     },
     birthday: {
       type: Date,
@@ -38,4 +40,5 @@ const userSchema = new Schema({
 });
 
 const User = model("User", userSchema);
+
 export default User;

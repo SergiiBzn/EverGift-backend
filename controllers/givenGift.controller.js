@@ -1,3 +1,5 @@
+/** @format */
+
 import { de } from "zod/locales";
 import { GivenGift, Gift, Contact } from "../models/index.js";
 

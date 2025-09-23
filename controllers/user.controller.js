@@ -1,3 +1,5 @@
+/** @format */
+
 import { User } from "../models/index.js";
 
 // profile update and wishList update

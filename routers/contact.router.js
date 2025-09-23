@@ -1,3 +1,5 @@
+/** @format */
+
 import { Router } from "express";
 import {
   getAllGivenGifts,
@@ -48,6 +50,8 @@ contactRouter
   .route("/:contactId/wishlist")
   .put(authenticate, checkCustomContact, updateContactWishList);
 
+//********** contact GivenGifts **********
+
 contactRouter
   .route("/:contactId/givenGifts")
   .get(authenticate, getAllGivenGifts)
@@ -57,6 +61,8 @@ contactRouter
   .get(authenticate, getGivenGift)
   .put(authenticate, updateGivenGift)
   .delete(authenticate, deleteGivenGift);
+
+//********** contact Events **********
 
 contactRouter
   .route("/:contactId/events")
