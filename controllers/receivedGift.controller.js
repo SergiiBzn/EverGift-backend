@@ -112,9 +112,14 @@ export const deleteReceivedGift = async (req, res) => {
     if (!deleted)
       return res.status(404).json({ message: "Received gift not found" });
 
+    // delete associated gift
     if (deleted.gift) {
       await Gift.findByIdAndDelete(deleted.gift._id);
     }
+    // update user's receivedGifts array
+    await User.findByIdAndUpdate(userId, {
+      $pull: { receivedGifts: receivedGiftId },
+    });
     return res.status(204).send();
   } catch (err) {
     return res
