@@ -39,8 +39,9 @@ const contactSchema = new Schema({
     tags: [String],
   },
 
+  customWishList: { type: Array, default: [] },
+
   note: { type: String },
-  wishList: { type: Array, default: [] },
   givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
   events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 

@@ -36,7 +36,7 @@ contactRouter
 contactRouter
   .route("/:contactId")
   .get(authenticate, getContact)
-  .delete(authenticate, checkCustomContact, deleteContact);
+  .delete(authenticate, deleteContact);
 
 // update contact note
 contactRouter.route("/:contactId/note").put(authenticate, updateContactNote);

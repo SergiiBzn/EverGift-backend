@@ -1,70 +1,104 @@
 /** @format */
 
 import { Contact, GivenGift, Event, User, Gift } from "../models/index.js";
+/**
+ * Helper: Format the contact output and unify the front-end structure
+ */
+const formContact = (contact) => {
+  return {
+    id: contact._id,
+    contactType: contact.contactType,
+    note: contact.note,
+    givenGifts: contact.givenGifts,
+    events: contact.events,
+    profil:
+      contact.contactType === "user"
+        ? contact.linkedUserId.profil
+        : contact.customProfil,
+    wishList:
+      contact.contactType === "user"
+        ? contact.linkedUserId.wishList
+        : contact.customWishList,
+  };
+};
 
 // get all contacts for a user
 export const getAllContacts = async (req, res) => {
   const ownerId = req.userId;
-  const contacts = await Contact.findById({ ownerId });
-  res.json(contacts);
+  // const user = await User.findById(ownerId);
+  const contacts = await Contact.find({ ownerId }).populate([
+    { path: "linkedUserId", select: "profil wishList" },
+  ]);
+  const formatted = contacts.map(formContact);
+  res.status(200).json(formatted);
 };
 
 // create a new contact or linked user
 export const createContact = async (req, res) => {
   const ownerId = req.userId;
-  let contact;
   const { contactType, linkedUserId, customProfil } = req.body;
+
+  let contact;
+
+  // user as contact
   if (contactType === "user") {
-    if (!linkedUserId) {
-      throw new Error("linkedUserId is required for contactType 'user'", {
-        cause: 400,
-      });
-    } else if (linkedUserId === ownerId) {
+    const user = await User.findById(ownerId).populate("contacts");
+
+    // linkedUserId
+    const linkedUser = await User.findById(linkedUserId);
+
+    if (!linkedUser) {
+      throw new Error("Linked user not found", { cause: 404 });
+    }
+    if (linkedUserId === ownerId) {
       throw new Error("Cannot add yourself as a contact", { cause: 400 });
     }
-  }
-
-  if (
-    contactType === "custom" &&
-    (!customProfil?.name || !customProfil?.birthday)
-  ) {
-    throw new Error(
-      "customProfil with name and birthday is required for contactType 'custom'",
-      {
-        cause: 400,
-      }
+    const alreadyContact = user.contacts.some(
+      (c) =>
+        c.contactType === "user" &&
+        c.linkedUserId?.toString() === linkedUserId.toString()
     );
-  }
-  contact = await Contact.create({
-    ownerId,
-    contactType,
-    linkedUserId: contactType === "user" ? linkedUserId : undefined,
-    customProfil: contactType === "custom" ? customProfil : undefined,
-  });
-  await contact.populate("linkedUserId");
-  // if contact is of type 'user' and linkedUserId is provided and unique, add the contact to the user's contacts list
+    if (alreadyContact) {
+      throw new Error("This user is already in your contacts", { cause: 400 });
+    }
 
-  // linkedUserId
-  const user = await User.findById(ownerId);
-  const { contacts } = user;
-  // contacts is an array of ObjectId of Contact, in Contact can the linkedUserId be found and match the linkedUserId provided in the request body
-  const isAlreadyContact = contacts.some(async (contactId) => {
-    const contact = await Contact.findById(contactId);
-    return (
-      contact.contactType === "user" &&
-      contact.linkedUserId?.toString() === linkedUserId
-    );
-  });
-
-  if (contactType === "user" && isAlreadyContact) {
-    throw new Error("This user is already in your contacts", { cause: 400 });
+    contact = await Contact.create({
+      ownerId,
+      contactType,
+      linkedUserId,
+    });
   }
 
+  // =========================== custom contact ==========================
+  else if (contactType === "custom") {
+    if (!customProfil?.name || !customProfil?.birthday) {
+      throw new Error(
+        "customProfil with name and birthday is required for contactType 'custom'",
+        {
+          cause: 400,
+        }
+      );
+    }
+    contact = await Contact.create({
+      ownerId,
+      contactType,
+      customProfil,
+    });
+  } else {
+    throw new Error("Invalid contact type", {
+      cause: 400,
+    });
+  }
+  // add contact to user.contacts array
   await User.findByIdAndUpdate(ownerId, {
     $push: { contacts: contact._id },
   });
 
-  res.status(201).json(contact);
+  // populate linkedUser for uniform respons
+  await contact.populate({ path: "linkedUserId", select: "profil wishList" });
+  console.log(contact);
+
+  res.status(201).json(formContact(contact));
 };
 
 // get a specific contact by ID
@@ -72,27 +106,19 @@ export const getContact = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
 
-  if (!contactId.match(/^[0-9a-fA-F]{24}$/)) {
-    throw new Error("Invalid contact ID format", { cause: 400 });
-  }
+  // if (!contactId.match(/^[0-9a-fA-F]{24}$/)) {
+  //   throw new Error("Invalid contact ID format", { cause: 400 });
+  // }
 
-  if (contactId === ownerId) {
-    throw new Error("Cannot get user as contact", { cause: 400 });
-  }
+  const contact = await Contact.findOne({ _id: contactId, ownerId }).populate([
+    { path: "givenGifts", populate: { path: "gift", model: "Gift" } },
+    { path: "events", populate: { path: "gift", model: "Gift" } },
+    { path: "linkedUserId", select: "profil wishList" },
+  ]);
 
-  const contact = await Contact.findOne({ _id: contactId, ownerId });
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
-  const populations = [{ path: "givenGifts" }, { path: "eventList" }];
-  if (contact.contactType === "user" && contact.linkedUserId) {
-    populations.push({
-      path: "linkedUserId",
-      select: "email profil wishList",
-    });
-  }
-  await contact.populate(populations);
-
-  res.json(contact);
+  res.status(200).json(formContact(contact));
 };
 
 //==================== update a contact note by ID==========================
@@ -105,9 +131,9 @@ export const updateContactNote = async (req, res) => {
     { _id: contactId, ownerId },
     { note },
     { new: true }
-  );
+  ).populate({ path: "linkedUserId", select: "profil wishList" });
   if (!contact) throw new Error("Contact not found", { cause: 404 });
-  res.json(contact);
+  res.status(200).json(formContact(contact));
 };
 
 //==================== update a contact Profile by ID==========================
@@ -115,7 +141,6 @@ export const updateContactProfile = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
   const { customProfil } = req.body;
-  console.log(customProfil);
 
   const contact = await Contact.findOneAndUpdate(
     { _id: contactId, ownerId },
@@ -125,7 +150,7 @@ export const updateContactProfile = async (req, res) => {
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
-  res.json(contact);
+  res.status(200).json(formContact(contact));
 };
 
 //==================== update a contact wishlist by ID==========================
@@ -136,82 +161,14 @@ export const updateContactWishList = async (req, res) => {
 
   const contact = await Contact.findOneAndUpdate(
     { _id: contactId, ownerId },
-    { $addToSet: { wishList: wishItem } },
+    { $addToSet: { customWishList: wishItem } },
     { new: true }
   );
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
-  res.json(contact.wishList);
+  res.status(200).json(formContact(contact));
 };
-
-// ==================== update a contact by ID==========================
-// exports.updateContact = async (req, res) => {
-//   const { contactId } = req.params;
-//   const { customProfil, note, wishList } = req.body;
-//   const ownerId = req.userId;
-
-//   try {
-//     const contact = await Contact.findOne({ _id: contactId, ownerId });
-
-//     if (!contact) {
-//       return res.status(404).json({ message: "Contact not found" });
-//     }
-
-//     const updateOps = {
-//       $set: {},
-//     };
-
-//     // note 可以在任何类型的联系人上更新
-//     if (note !== undefined) {
-//       updateOps.$set.note = note;
-//     }
-
-//     // profil 和 wishlist 只能在 "custom" 类型的联系人上更新
-//     if (contact.contactType === "custom") {
-//       if (customProfil) {
-//         for (const key in customProfil) {
-//           if (Object.prototype.hasOwnProperty.call(customProfil, key)) {
-//             updateOps.$set[`customProfil.${key}`] = customProfil[key];
-//           }
-//         }
-//       }
-//       if (wishList) {
-//         if (!Array.isArray(wishList)) {
-//           return res
-//             .status(400)
-//             .json({ message: "wishList must be an array of items to add" });
-//         }
-//         updateOps.$addToSet = { wishList: { $each: wishList } };
-//       }
-//     } else {
-//       if (customProfil || wishList) {
-//         return res.status(400).json({
-//           message:
-//             "Profile and wishlist can only be updated for custom contacts.",
-//         });
-//       }
-//     }
-
-//     if (Object.keys(updateOps.$set).length === 0) {
-//       delete updateOps.$set;
-//     }
-
-//     if (Object.keys(updateOps).length === 0) {
-//       return res.json(contact);
-//     }
-
-//     const updatedContact = await Contact.findByIdAndUpdate(
-//       contactId,
-//       updateOps,
-//       { new: true, runValidators: true }
-//     );
-
-//     res.json(updatedContact);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 // delete a contact by ID
 export const deleteContact = async (req, res) => {
@@ -223,12 +180,7 @@ export const deleteContact = async (req, res) => {
 
   // remove all givenGifts
   if (contact.givenGifts?.length) {
-    // delete all givenGifts associated with the contact
-    await Promise.all(
-      contact.givenGifts.map((givenGiftId) =>
-        GivenGift.findByIdAndDelete(givenGiftId)
-      )
-    );
+    await GivenGift.deleteMany({ _id: { $in: contact.givenGifts } });
   }
 
   // remove all events and associated gifts
@@ -238,11 +190,12 @@ export const deleteContact = async (req, res) => {
     const giftIds = eventsToDelete
       .map((event) => event.gift)
       .filter((giftId) => giftId !== null); // array of gift ids to delete
+
     // delete all events and gifts associated with the contact
     await Gift.deleteMany({ _id: { $in: giftIds } });
     await Event.deleteMany({ _id: { $in: contact.events } });
 
-    // update user's events array
+    // // update user's events array
     await User.findByIdAndUpdate(contact.ownerId, {
       $pull: { events: { $in: contact.events } },
     });
@@ -253,5 +206,5 @@ export const deleteContact = async (req, res) => {
   });
   // finally delete the contact
   await Contact.findByIdAndDelete(contactId);
-  return res.json({ message: "Contact deleted" });
+  return res.status(204).json();
 };
