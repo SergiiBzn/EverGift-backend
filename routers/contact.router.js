@@ -27,24 +27,42 @@ import {
   updateEvent,
   deleteEvent,
 } from "../controllers/event.controller.js";
-
+import {
+  createContactSchema,
+  updateContactProfileSchema,
+  updateContactNoteSchema,
+  updateContactWishListSchema,
+} from "../schemas/contact.schema.js";
 const contactRouter = Router();
 
-contactRouter.route("/").get(getAllContacts).post(createContact);
+contactRouter
+  .route("/")
+  .get(getAllContacts)
+  .post(validate(createContactSchema), createContact);
 // get and delete contact by ID
 contactRouter.route("/:contactId").get(getContact).delete(deleteContact);
 
 // update contact note
-contactRouter.route("/:contactId/note").put(updateContactNote);
+contactRouter
+  .route("/:contactId/note")
+  .put(validate(updateContactNoteSchema), updateContactNote);
 
 // update contact profile and wishlist if custom contact
 contactRouter
   .route("/:contactId/profile")
-  .put(checkCustomContact, updateContactProfile);
+  .put(
+    checkCustomContact,
+    validate(updateContactProfileSchema),
+    updateContactProfile
+  );
 
 contactRouter
   .route("/:contactId/wishlist")
-  .put(checkCustomContact, updateContactWishList);
+  .put(
+    checkCustomContact,
+    validate(updateContactWishListSchema),
+    updateContactWishList
+  );
 
 //********** contact GivenGifts **********
 
