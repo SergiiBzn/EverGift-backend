@@ -1,5 +1,3 @@
-/** @format */
-
 import { Router } from "express";
 import {
   getAllGivenGifts,
@@ -18,6 +16,10 @@ import {
   updateContactWishList,
 } from "../controllers/contact.controller.js";
 import { checkCustomContact, validate } from "../middlewares/index.js";
+import {
+  createGivenGiftSchema,
+  updateGivenGiftSchema,
+} from "../schemas/givenGift.schema.js";
 import {
   getAllEvents,
   getEvent,
@@ -49,11 +51,11 @@ contactRouter
 contactRouter
   .route("/:contactId/givenGifts")
   .get(getAllGivenGifts)
-  .post(createGivenGift);
+  .post(validate(createGivenGiftSchema), createGivenGift);
 contactRouter
   .route("/:contactId/givenGifts/:givenGiftId")
   .get(getGivenGift)
-  .put(updateGivenGift)
+  .put(validate(updateGivenGiftSchema), updateGivenGift)
   .delete(deleteGivenGift);
 
 //********** contact Events **********
