@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { Event, GivenGift, Gift, User } from "./index.js";
 
 //********** WishItem Schema for custom contacts **********/
-const wishItemSchema = new Schema({
+export const wishItemSchema = new Schema({
   item: { type: String, required: true },
   description: { type: String, optional: true },
 });

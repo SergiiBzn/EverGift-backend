@@ -1,12 +1,12 @@
 /** @format */
 
-import { de } from "zod/locales";
 import { GivenGift, Gift, Contact } from "../models/index.js";
 
-// GET /contacts/:id/givenGifts
+// GET /contacts/:contactId/givenGifts
 export const getAllGivenGifts = async (req, res) => {
   try {
     const { contactId } = req.params;
+
     const gifts = await GivenGift.find({ contactId }).populate("gift");
     return res.status(200).json(gifts);
   } catch (err) {

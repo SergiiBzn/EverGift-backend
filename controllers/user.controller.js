@@ -20,11 +20,10 @@ export const updateUserProfile = async (req, res) => {
 
 //********** PUT /users/wishList **********
 export const updateUserWishList = async (req, res) => {
-  const { wishItem } = req.body;
   const userId = req.userId;
   const user = await User.findByIdAndUpdate(
     userId,
-    { $push: { wishList: wishItem } },
+    { $set: { wishList: req.body } },
     { new: true, runValidators: true }
   );
   if (!user) {

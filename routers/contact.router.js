@@ -35,7 +35,7 @@ import {
   createContactSchema,
   updateContactProfileSchema,
   updateContactNoteSchema,
-  updateContactWishListSchema,
+  updateWishListSchema,
 } from "../schemas/contact.schema.js";
 const contactRouter = Router();
 
@@ -64,11 +64,12 @@ contactRouter
   .route("/:contactId/wishlist")
   .put(
     checkCustomContact,
-    validate(updateContactWishListSchema),
+    validate(updateWishListSchema),
     updateContactWishList
   );
 
 //********** contact GivenGifts **********
+//middlewares: check contact exist
 
 contactRouter
   .route("/:contactId/givenGifts")
