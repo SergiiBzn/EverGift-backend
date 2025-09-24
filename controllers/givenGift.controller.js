@@ -43,6 +43,7 @@ export const createGivenGift = async (req, res) => {
     const createGift = await Gift.create(gift);
 
     payload = { ...payload, gift: createGift._id };
+
     const created = await GivenGift.create(payload);
 
     // update contact's givenGifts array
