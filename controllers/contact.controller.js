@@ -127,7 +127,9 @@ export const updateContactNote = async (req, res) => {
     { note },
     { new: true }
   ).populate({ path: "linkedUserId", select: "profil wishList" });
+
   if (!contact) throw new Error("Contact not found", { cause: 404 });
+
   res.status(200).json(formContact(contact));
 };
 
