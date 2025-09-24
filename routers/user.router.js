@@ -1,14 +1,7 @@
 /** @format */
 
 import { Router } from "express";
-import {
-  deleteUser,
-  login,
-  logout,
-  me,
-  register,
-  updateUser,
-} from "../controllers/auth.controller.js";
+
 import {
   createReceivedGift,
   deleteReceivedGift,
@@ -20,42 +13,31 @@ import {
   updateUserProfile,
   updateUserWishList,
 } from "../controllers/user.controller.js";
-import { authenticate } from "../middlewares/index.js";
-import validate from "../middlewares/validate.js";
-import {
-  loginSchema,
-  registerSchema,
-  updateUserSchema,
-} from "../schemas/user.schema.js";
+import { validate } from "../middlewares/index.js";
+import { updateUserSchema } from "../schemas/user.schema.js";
+import { deleteUser } from "../controllers/auth.controller.js";
+import { me, updateUser } from "../controllers/auth.controller.js";
 const userRouter = Router();
 
-//********** Auth users **********
-userRouter.route("/register").post(validate(registerSchema), register);
-userRouter.route("/login").post(validate(loginSchema), login);
-userRouter.route("/logout").delete(logout);
 userRouter
   .route("/me")
-  .get(authenticate, me)
-  .put(authenticate, validate(updateUserSchema), updateUser)
-  .delete(authenticate, deleteUser);
+  .get(me)
+  .put(validate(updateUserSchema), updateUser)
+  .delete(deleteUser);
 
 //********** profile **********
-userRouter.route("/profile").put(authenticate, updateUserProfile);
-userRouter.route("/wishList").put(authenticate, updateUserWishList);
+userRouter.route("/profile").put(updateUserProfile);
+userRouter.route("/wishList").put(updateUserWishList);
 
 //********** receivedGifts **********
 userRouter
   .route("/receivedGifts")
-  .get(authenticate, getAllReceivedGifts)
-  .post(authenticate, createReceivedGift);
+  .get(getAllReceivedGifts)
+  .post(createReceivedGift);
 userRouter
   .route("/receivedGifts/:receivedGiftId")
-  .get(authenticate, getReceivedGift)
-  .put(authenticate, updateReceivedGift)
-  .delete(authenticate, deleteReceivedGift);
+  .get(getReceivedGift)
+  .put(updateReceivedGift)
+  .delete(deleteReceivedGift);
 
-// userRouter
-//   .route("/:id/events")
-//   .get(getAllEvents)
-//   .post(authenticate, createEvent);
 export default userRouter;

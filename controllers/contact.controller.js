@@ -106,10 +106,6 @@ export const getContact = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
 
-  // if (!contactId.match(/^[0-9a-fA-F]{24}$/)) {
-  //   throw new Error("Invalid contact ID format", { cause: 400 });
-  // }
-
   const contact = await Contact.findOne({ _id: contactId, ownerId }).populate([
     { path: "givenGifts", populate: { path: "gift", model: "Gift" } },
     { path: "events", populate: { path: "gift", model: "Gift" } },
