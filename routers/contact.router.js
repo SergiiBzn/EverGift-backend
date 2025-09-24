@@ -17,6 +17,10 @@ import {
 } from "../controllers/contact.controller.js";
 import { checkCustomContact, validate } from "../middlewares/index.js";
 import {
+  createEventSchema,
+  updateEventSchema,
+} from "../schemas/event.schema.js";
+import {
   createGivenGiftSchema,
   updateGivenGiftSchema,
 } from "../schemas/givenGift.schema.js";
@@ -60,11 +64,14 @@ contactRouter
 
 //********** contact Events **********
 
-contactRouter.route("/:contactId/events").get(getAllEvents).post(createEvent);
+contactRouter
+  .route("/:contactId/events")
+  .get(getAllEvents)
+  .post(validate(createEventSchema), createEvent);
 contactRouter
   .route("/:contactId/events/:eventId")
   .get(getEvent)
-  .put(updateEvent)
+  .put(validate(updateEventSchema), updateEvent)
   .delete(deleteEvent);
 
 export default contactRouter;
