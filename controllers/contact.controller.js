@@ -96,7 +96,6 @@ export const createContact = async (req, res) => {
 
   // populate linkedUser for uniform respons
   await contact.populate({ path: "linkedUserId", select: "profil wishList" });
-  console.log(contact);
 
   res.status(201).json(formContact(contact));
 };

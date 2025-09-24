@@ -16,9 +16,10 @@ import {
 import { validate } from "../middlewares/index.js";
 import { updateUserSchema } from "../schemas/user.schema.js";
 import { deleteUser } from "../controllers/auth.controller.js";
-import { me, updateUser } from "../controllers/auth.controller.js";
+import { me, updateUser, logout } from "../controllers/auth.controller.js";
 const userRouter = Router();
 
+userRouter.route("/logout").delete(logout);
 userRouter
   .route("/me")
   .get(me)

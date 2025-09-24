@@ -24,7 +24,11 @@ const contactSchema = new Schema({
         return this.contactType === "custom";
       },
     },
-    avatar: { type: String },
+    avatar: {
+      type: String,
+      default:
+        "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png",
+    },
     birthday: {
       type: Date,
       required: function () {

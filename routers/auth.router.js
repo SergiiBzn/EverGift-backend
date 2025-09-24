@@ -7,6 +7,5 @@ const authRouter = Router();
 //********** Auth users **********
 authRouter.route("/register").post(validate(registerSchema), register);
 authRouter.route("/login").post(validate(loginSchema), login);
-authRouter.route("/logout").delete(logout);
 
 export default authRouter;
