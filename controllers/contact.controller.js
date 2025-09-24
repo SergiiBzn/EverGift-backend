@@ -152,11 +152,10 @@ export const updateContactProfile = async (req, res) => {
 export const updateContactWishList = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
-  const { wishItem } = req.body;
 
   const contact = await Contact.findOneAndUpdate(
     { _id: contactId, ownerId },
-    { $addToSet: { customWishList: wishItem } },
+    { $set: { customWishList: req.body } },
     { new: true }
   );
 

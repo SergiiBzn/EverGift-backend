@@ -39,10 +39,12 @@ export const updateContactProfileSchema = z.object({
   customProfil: customProfilSchema,
 });
 
-export const updateContactWishListSchema = z.object({
-  contactType: z.literal("custom"),
-  customWishList: z.array(z.string()),
-});
+export const updateContactWishListSchema = z.array(
+  z.object({
+    item: z.string().min(1, "Item name cannot be empty"),
+    description: z.string().optional(),
+  })
+);
 
 export const updateContactNoteSchema = z.object({
   note: z.string().optional(),
