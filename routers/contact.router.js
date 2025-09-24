@@ -17,7 +17,7 @@ import {
   updateContactProfile,
   updateContactWishList,
 } from "../controllers/contact.controller.js";
-import { authenticate, checkCustomContact } from "../middlewares/index.js";
+import { checkCustomContact, validate } from "../middlewares/index.js";
 import {
   getAllEvents,
   getEvent,
@@ -28,50 +28,41 @@ import {
 
 const contactRouter = Router();
 
-contactRouter
-  .route("/")
-  .get(authenticate, getAllContacts)
-  .post(authenticate, createContact);
+contactRouter.route("/").get(getAllContacts).post(createContact);
 // get and delete contact by ID
-contactRouter
-  .route("/:contactId")
-  .get(authenticate, getContact)
-  .delete(authenticate, deleteContact);
+contactRouter.route("/:contactId").get(getContact).delete(deleteContact);
 
 // update contact note
-contactRouter.route("/:contactId/note").put(authenticate, updateContactNote);
+contactRouter.route("/:contactId/note").put(updateContactNote);
 
 // update contact profile and wishlist if custom contact
 contactRouter
   .route("/:contactId/profile")
-  .put(authenticate, checkCustomContact, updateContactProfile);
+  .put(checkCustomContact, updateContactProfile);
 
 contactRouter
   .route("/:contactId/wishlist")
-  .put(authenticate, checkCustomContact, updateContactWishList);
+  .put(checkCustomContact, updateContactWishList);
 
 //********** contact GivenGifts **********
 
 contactRouter
   .route("/:contactId/givenGifts")
-  .get(authenticate, getAllGivenGifts)
-  .post(authenticate, createGivenGift);
+  .get(getAllGivenGifts)
+  .post(createGivenGift);
 contactRouter
   .route("/:contactId/givenGifts/:givenGiftId")
-  .get(authenticate, getGivenGift)
-  .put(authenticate, updateGivenGift)
-  .delete(authenticate, deleteGivenGift);
+  .get(getGivenGift)
+  .put(updateGivenGift)
+  .delete(deleteGivenGift);
 
 //********** contact Events **********
 
-contactRouter
-  .route("/:contactId/events")
-  .get(authenticate, getAllEvents)
-  .post(authenticate, createEvent);
+contactRouter.route("/:contactId/events").get(getAllEvents).post(createEvent);
 contactRouter
   .route("/:contactId/events/:eventId")
-  .get(authenticate, getEvent)
-  .put(authenticate, updateEvent)
-  .delete(authenticate, deleteEvent);
+  .get(getEvent)
+  .put(updateEvent)
+  .delete(deleteEvent);
 
 export default contactRouter;
