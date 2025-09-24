@@ -20,7 +20,8 @@ const userSchema = new Schema({
     },
     avatar: {
       type: String,
-      default: "",
+      default:
+        "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png",
     },
     birthday: {
       type: Date,
