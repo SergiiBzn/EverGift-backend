@@ -1,8 +1,8 @@
 /** @format */
 
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 //********** POST users/register **********
 export const register = async (req, res) => {
@@ -12,7 +12,7 @@ export const register = async (req, res) => {
     email,
   });
   if (existingUser) {
-    throw new Error('Email already exists', {
+    throw new Error("Email already exists", {
       cause: 409,
     });
   }
@@ -42,11 +42,11 @@ export const login = async (req, res) => {
   const user = await User.findOne({
     email,
   })
-    .select('+password')
+    .select("+password")
     .lean(); //lean returns the document as a plain js object
 
   if (!user) {
-    throw new Error('Invalid Credentials', {
+    throw new Error("Invalid Credentials", {
       cause: 400,
     });
   }
@@ -55,7 +55,7 @@ export const login = async (req, res) => {
   const isPasswordMatched = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatched) {
-    throw new Error('Invalid Credentials', {
+    throw new Error("Invalid Credentials", {
       cause: 401,
     });
   }
@@ -67,16 +67,16 @@ export const login = async (req, res) => {
   };
   // generate a token
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN_DAYS + 'd',
+    expiresIn: process.env.JWT_EXPIRES_IN_DAYS + "d",
   });
 
   // user password should be deleted from the user object to be sent back to the client
   delete user.password;
 
   // store the token in the cookie and send the cookie back to the client in the response
-  res.cookie('token', token, {
+  res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   });
 
@@ -85,23 +85,32 @@ export const login = async (req, res) => {
 
 //********** DELETE users/logout **********
 export const logout = async (req, res) => {
-  res.clearCookie('token', {
+  res.clearCookie("token", {
     httpOnly: true,
-   secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   });
   res.status(204).json({
-    message: 'Logged Out Successfully',
+    message: "Logged Out Successfully",
   });
 };
 
 //********** GET users/me **********
 export const me = async (req, res) => {
-  const user = await User.findById(req.userId);
+  const user = await User.findById(req.userId).populate(
+    {
+      path: "receivedGifts",
+      populate: { path: "gift", model: "Gift" },
+    }
+    // {
+    //   path: "contacts",
+    //   populate: { path: "customProfil", model: "Contact" },
+    // }
+  );
 
   if (!user) {
     throw (
-      (new Error('Not Authenticated'),
+      (new Error("Not Authenticated"),
       {
         cause: 401,
       })
@@ -127,7 +136,7 @@ export const updateUser = async (req, res) => {
   }); // to get the updated user object after the update operation
 
   if (!user) {
-    throw new Error('User Not Found', {
+    throw new Error("User Not Found", {
       cause: 404,
     });
   }
@@ -141,12 +150,12 @@ export const deleteUser = async (req, res) => {
 
   const user = await User.findByIdAndDelete(userId);
   if (!user) {
-    throw new Error('User Not Found', {
+    throw new Error("User Not Found", {
       cause: 404,
     });
   }
 
   res.json({
-    message: 'User Deleted Successfully',
+    message: "User Deleted Successfully",
   });
 };
