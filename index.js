@@ -11,7 +11,12 @@ import { userRouter, contactRouter, authRouter } from "./routers/index.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:5173" || "https://evergift-frontend.onrender.com",
+  })
+);
 app.use(express.json(), cookieParser());
 
 app.get("/health", async (_req, res) => {
