@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const customProfilSchema = z.object({
+const customProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
   avatar: z.string().optional(),
   birthday: z.coerce.date(),
@@ -15,7 +15,7 @@ export const createContactSchema = z
       .string()
       .regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format")
       .optional(),
-    customProfil: customProfilSchema.optional(),
+    customProfile: customProfileSchema.optional(),
   })
   .refine(
     (data) => {
@@ -23,8 +23,8 @@ export const createContactSchema = z
       if (data.contactType === "user" && !data.linkedUserId) {
         return false;
       }
-      // custom contact must have customProfil
-      if (data.contactType === "custom" && !data.customProfil) {
+      // custom contact must have customProfile
+      if (data.contactType === "custom" && !data.customProfile) {
         return false;
       }
       return true;
@@ -36,7 +36,7 @@ export const createContactSchema = z
 
 export const updateContactProfileSchema = z.object({
   contactType: z.literal("custom"),
-  customProfil: customProfilSchema,
+  customProfile: customProfileSchema,
 });
 
 export const updateWishListSchema = z.array(

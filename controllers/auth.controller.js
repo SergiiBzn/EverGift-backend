@@ -3,6 +3,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { transformContacts } from "../utils/transformContact.js";
 
 //********** POST users/register **********
 export const register = async (req, res) => {
@@ -63,7 +64,7 @@ export const login = async (req, res) => {
   // define the payload
   const payload = {
     id: user._id,
-    username: user.profil.name,
+    username: user.profile.name,
   };
   // generate a token
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -97,18 +98,17 @@ export const logout = async (req, res) => {
 
 //********** GET users/me **********
 export const me = async (req, res) => {
-  const user = await User.findById(req.userId).populate(
+  const userDoc = await User.findById(req.userId).populate([
+    {
+      path: "contacts",
+      populate: { path: "linkedUserId", select: "profile" },
+    },
     {
       path: "receivedGifts",
       populate: { path: "gift", model: "Gift" },
-    }
-    // {
-    //   path: "contacts",
-    //   populate: { path: "customProfil", model: "Contact" },
-    // }
-  );
-
-  if (!user) {
+    },
+  ]);
+  if (!userDoc) {
     throw (
       (new Error("Not Authenticated"),
       {
@@ -116,6 +116,10 @@ export const me = async (req, res) => {
       })
     );
   }
+  // transform contacts
+
+  const user = userDoc.toObject();
+  user.contacts = transformContacts(user.contacts);
 
   res.json(user);
 };

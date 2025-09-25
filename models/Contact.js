@@ -1,59 +1,34 @@
-import { Schema, model } from 'mongoose';
-import { Event, GivenGift, Gift, User } from './index.js';
-
-//********** WishItem Schema for custom contacts **********/
-export const wishItemSchema = new Schema({
-  item: { type: String, required: true },
-  description: { type: String, optional: true },
-});
+import { Schema, model } from "mongoose";
+import { Event, GivenGift, Gift, User } from "./index.js";
+import { profileSchema } from "./profileSchema.js";
+import { wishItemSchema } from "./wishListSchema.js";
 
 //********** contact Schema **********/
 
 const contactSchema = new Schema({
-  ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   contactType: {
     type: String,
-    enum: ['user', 'custom'],
-    default: 'custom',
+    enum: ["user", "custom"],
+    default: "custom",
     required: true, //user ohne Konto (Kinder) -> Form
   },
 
   linkedUserId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
   },
 
-  customProfil: {
-    name: {
-      type: String,
-      required: function () {
-        return this.contactType === 'custom';
-      },
-    },
-    avatar: {
-      type: String,
-      default:
-        'https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png',
-    },
-    birthday: {
-      type: Date,
-      required: function () {
-        return this.contactType === 'custom';
-      },
-    },
-    gender: {
-      type: String,
-      enum: ['male', 'female', 'other'],
-      default: 'other',
-    },
-    tags: [String],
+  customProfile: {
+    type: profileSchema,
+    default: () => ({}),
   },
 
   customWishList: { type: [wishItemSchema], default: [] },
 
   note: { type: String },
-  givenGifts: [{ type: Schema.Types.ObjectId, ref: 'GivenGift' }],
-  events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+  givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
+  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 
   //  status: {
   //   type: String,
@@ -62,9 +37,10 @@ const contactSchema = new Schema({
   // },
 });
 
-contactSchema.pre('findOneAndDelete', async function (next) {
+// delete cascade
+contactSchema.pre("findOneAndDelete", async function (next) {
   const contact = await this.model.findOne(this.getQuery());
-  if (!contact) throw new Error('Contact not found', { cause: 404 });
+  if (!contact) throw new Error("Contact not found", { cause: 404 });
 
   // remove all givenGifts
   if (contact.givenGifts?.length) {
@@ -76,7 +52,7 @@ contactSchema.pre('findOneAndDelete', async function (next) {
     const giftIds = givenGiftsToDelete
       .map((givenGift) => givenGift.gift)
       .filter((giftId) => giftId !== null);
-    console.log('giftIds', giftIds);
+    console.log("giftIds", giftIds);
 
     if (giftIds.length) await Gift.deleteMany({ _id: { $in: giftIds } });
     await GivenGift.deleteMany({ _id: { $in: contact.givenGifts } });
@@ -108,5 +84,5 @@ contactSchema.pre('findOneAndDelete', async function (next) {
   next();
 });
 
-const Contact = model('Contact', contactSchema);
+const Contact = model("Contact", contactSchema);
 export default Contact;
