@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-//********** POST users/register **********
+//********** POST auth/register **********
 export const register = async (req, res) => {
   const { email, password } = req.body;
   // check if the user already exists
@@ -34,7 +34,7 @@ export const register = async (req, res) => {
   res.json(user);
 };
 
-//********** POST users/login **********
+//********** POST auth/login **********
 export const login = async (req, res) => {
   // login
   const { email, password } = req.body;
