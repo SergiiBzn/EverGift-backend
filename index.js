@@ -11,12 +11,26 @@ import { userRouter, contactRouter, authRouter } from "./routers/index.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
+//app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+// app.use(cors({credentials: true, origin: "http://localhost:5173" || "https://evergift-frontend.onrender.com"}));
+const allowedOrigins = [
+  "https://evergift-frontend.onrender.com",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173" || "https://evergift-frontend.onrender.com",
+    origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
 );
+
 app.use(express.json(), cookieParser());
 
 app.get("/health", async (_req, res) => {
