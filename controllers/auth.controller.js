@@ -112,12 +112,9 @@ export const me = async (req, res) => {
   );
 
   if (!user) {
-    throw (
-      (new Error("Not Authenticated"),
-      {
-        cause: 401,
-      }
-    );
+    throw new Error("Not Authenticated", {
+      cause: 401,
+    });
   }
 
   res.json(user);
