@@ -100,11 +100,20 @@ export const logout = async (req, res) => {
 
 //********** GET users/me **********
 export const me = async (req, res) => {
-  const user = await User.findById(req.userId);
+  const user = await User.findById(req.userId).populate(
+    {
+      path: "receivedGifts",
+      populate: { path: "gift", model: "Gift" },
+    }
+    // {
+    //   path: "contacts",
+    //   populate: { path: "customProfil", model: "Contact" },
+    // }
+  );
 
   if (!user) {
     throw (
-      new Error("Not Authenticated"),
+      (new Error("Not Authenticated"),
       {
         cause: 401,
       }
