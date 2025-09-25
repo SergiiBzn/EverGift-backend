@@ -1,7 +1,4 @@
-/** @format */
-
 import { Router } from "express";
-
 import {
   createReceivedGift,
   deleteReceivedGift,
@@ -15,8 +12,14 @@ import {
 } from "../controllers/user.controller.js";
 import { validate } from "../middlewares/index.js";
 import { updateUserSchema } from "../schemas/user.schema.js";
+import {
+  createReceivedGiftSchema,
+  updateReceivedGiftSchema,
+} from "../schemas/receivedGift.schema.js";
 import { deleteUser } from "../controllers/auth.controller.js";
 import { me, updateUser, logout } from "../controllers/auth.controller.js";
+import { updateWishListSchema } from "../schemas/contact.schema.js";
+
 const userRouter = Router();
 
 userRouter.route("/logout").delete(logout);
@@ -28,17 +31,19 @@ userRouter
 
 //********** profile **********
 userRouter.route("/profile").put(updateUserProfile);
-userRouter.route("/wishList").put(updateUserWishList);
+userRouter
+  .route("/wishList")
+  .put(validate(updateWishListSchema), updateUserWishList);
 
 //********** receivedGifts **********
 userRouter
   .route("/receivedGifts")
   .get(getAllReceivedGifts)
-  .post(createReceivedGift);
+  .post(validate(createReceivedGiftSchema), createReceivedGift);
 userRouter
   .route("/receivedGifts/:receivedGiftId")
   .get(getReceivedGift)
-  .put(updateReceivedGift)
+  .put(validate(updateReceivedGiftSchema), updateReceivedGift)
   .delete(deleteReceivedGift);
 
 export default userRouter;

@@ -1,13 +1,11 @@
-/** @format */
-
-import { Router } from "express";
+import { Router } from 'express';
 import {
   getAllGivenGifts,
   getGivenGift,
   createGivenGift,
   updateGivenGift,
   deleteGivenGift,
-} from "../controllers/givenGift.controller.js";
+} from '../controllers/givenGift.controller.js';
 import {
   getAllContacts,
   getContact,
@@ -16,53 +14,87 @@ import {
   deleteContact,
   updateContactProfile,
   updateContactWishList,
-} from "../controllers/contact.controller.js";
-import { checkCustomContact, validate } from "../middlewares/index.js";
+} from '../controllers/contact.controller.js';
+import {
+  checkCustomContact,
+  validate,
+  checkContact,
+} from '../middlewares/index.js';
+import {
+  createEventSchema,
+  updateEventSchema,
+} from '../schemas/event.schema.js';
+import {
+  createGivenGiftSchema,
+  updateGivenGiftSchema,
+} from '../schemas/givenGift.schema.js';
 import {
   getAllEvents,
   getEvent,
   createEvent,
   updateEvent,
   deleteEvent,
-} from "../controllers/event.controller.js";
-
+} from '../controllers/event.controller.js';
+import {
+  createContactSchema,
+  updateContactProfileSchema,
+  updateContactNoteSchema,
+  updateWishListSchema,
+} from '../schemas/contact.schema.js';
 const contactRouter = Router();
 
-contactRouter.route("/").get(getAllContacts).post(createContact);
+contactRouter
+  .route('/')
+  .get(getAllContacts)
+  .post(validate(createContactSchema), createContact);
 // get and delete contact by ID
-contactRouter.route("/:contactId").get(getContact).delete(deleteContact);
+contactRouter.route('/:contactId').get(getContact).delete(deleteContact);
 
 // update contact note
-contactRouter.route("/:contactId/note").put(updateContactNote);
+contactRouter
+  .route('/:contactId/note')
+  .put(validate(updateContactNoteSchema), updateContactNote);
 
 // update contact profile and wishlist if custom contact
 contactRouter
-  .route("/:contactId/profile")
-  .put(checkCustomContact, updateContactProfile);
+  .route('/:contactId/profile')
+  .put(
+    checkCustomContact,
+    validate(updateContactProfileSchema),
+    updateContactProfile
+  );
 
 contactRouter
-  .route("/:contactId/wishlist")
-  .put(checkCustomContact, updateContactWishList);
+  .route('/:contactId/wishlist')
+  .put(
+    checkCustomContact,
+    validate(updateWishListSchema),
+    updateContactWishList
+  );
 
 //********** contact GivenGifts **********
+//middlewares: check contact exist
 
 contactRouter
-  .route("/:contactId/givenGifts")
-  .get(getAllGivenGifts)
-  .post(createGivenGift);
+  .route('/:contactId/givenGifts')
+  .get(checkContact, getAllGivenGifts)
+  .post(checkContact, validate(createGivenGiftSchema), createGivenGift);
 contactRouter
-  .route("/:contactId/givenGifts/:givenGiftId")
-  .get(getGivenGift)
-  .put(updateGivenGift)
-  .delete(deleteGivenGift);
+  .route('/:contactId/givenGifts/:givenGiftId')
+  .get(checkContact, getGivenGift)
+  .put(checkContact, validate(updateGivenGiftSchema), updateGivenGift)
+  .delete(checkContact, deleteGivenGift);
 
 //********** contact Events **********
 
-contactRouter.route("/:contactId/events").get(getAllEvents).post(createEvent);
 contactRouter
-  .route("/:contactId/events/:eventId")
-  .get(getEvent)
-  .put(updateEvent)
-  .delete(deleteEvent);
+  .route('/:contactId/events')
+  .get(checkContact, getAllEvents)
+  .post(checkContact, validate(createEventSchema), createEvent);
+contactRouter
+  .route('/:contactId/events/:eventId')
+  .get(checkContact, getEvent)
+  .put(checkContact, validate(updateEventSchema), updateEvent)
+  .delete(checkContact, deleteEvent);
 
 export default contactRouter;

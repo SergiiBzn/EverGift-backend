@@ -1,6 +1,7 @@
 /** @format */
 
 import { Schema, model } from "mongoose";
+import { wishItemSchema } from "./Contact.js";
 
 const userSchema = new Schema({
   email: {
@@ -29,7 +30,7 @@ const userSchema = new Schema({
     },
     tags: [String],
   },
-  wishList: [{ type: String }],
+  wishList: [{ type: wishItemSchema, default: [] }],
   receivedGifts: [
     {
       type: Schema.Types.ObjectId,
