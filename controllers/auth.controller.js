@@ -107,6 +107,10 @@ export const me = async (req, res) => {
       path: "receivedGifts",
       populate: { path: "gift", model: "Gift" },
     },
+    {
+      path: "events",
+      populate: { path: "gift", model: "Gift" },
+    },
   ]);
   if (!userDoc) {
     throw (
