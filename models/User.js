@@ -1,7 +1,8 @@
 /** @format */
 
 import { Schema, model } from "mongoose";
-import { wishItemSchema } from "./Contact.js";
+import { wishItemSchema } from "./wishListSchema.js";
+import { profileSchema } from "./profileSchema.js";
 
 const userSchema = new Schema({
   email: {
@@ -14,21 +15,9 @@ const userSchema = new Schema({
     required: true,
     select: false,
   },
-  profil: {
-    name: {
-      type: String,
-      default: "",
-    },
-    avatar: {
-      type: String,
-      default:
-        "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png",
-    },
-    birthday: {
-      type: Date,
-      default: "",
-    },
-    tags: [String],
+  profile: {
+    type: profileSchema,
+    default: () => ({}),
   },
   wishList: [{ type: wishItemSchema, default: [] }],
   receivedGifts: [

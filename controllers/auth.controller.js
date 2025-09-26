@@ -3,7 +3,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import { Contact } from "../models/index.js";
+import { transformContacts } from "../utils/transformContact.js";
 
 //********** POST auth/register **********
 export const register = async (req, res) => {
@@ -67,7 +67,7 @@ export const login = async (req, res) => {
   // define the payload
   const payload = {
     id: user._id,
-    username: user.profil.name,
+    username: user.profile.name,
   };
   // generate a token
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -101,41 +101,32 @@ export const logout = async (req, res) => {
 
 //********** GET users/me **********
 export const me = async (req, res) => {
-  // populate user contacts
-
-  /*  const user = await User.findById(req.userId).populate(
-    {
-      path: "receivedGifts",
-      populate: { path: "gift", model: "Gift" },
-    }
-    // {
-    //   path: "contacts",
-    //   populate: { path: "customProfil", model: "Contact" },
-    // }
-  ); */
-
-  const user = await User.findById(req.userId).populate([
-    {
-      path: "receivedGifts",
-      populate: { path: "gift", model: "Gift" },
-    },
+  const userDoc = await User.findById(req.userId).populate([
     {
       path: "contacts",
-      model: "Contact",
-      populate: {
-        path: "ownerId",
-        model: "User",
-      },
+      populate: { path: "linkedUserId", select: "profile" },
+    },
+    {
+      path: "receivedGifts",
+      populate: { path: "gift", model: "Gift" },
+    },
+    {
+      path: "events",
+      populate: { path: "gift", model: "Gift" },
     },
   ]);
-
-  if (!user) {
-    throw new Error("Not Authenticated", {
-      cause: 401,
-    });
+  if (!userDoc) {
+    throw (
+      new Error("Not Authenticated"),
+      {
+        cause: 401,
+      }
+    );
   }
+  // transform contacts
 
-  console.log("user from me after populate", user);
+  const user = userDoc.toObject();
+  user.contacts = transformContacts(user.contacts);
 
   res.json(user);
 };

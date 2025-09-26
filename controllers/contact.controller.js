@@ -11,10 +11,10 @@ const formContact = (contact) => {
     note: contact.note,
     givenGifts: contact.givenGifts,
     events: contact.events,
-    profil:
+    profile:
       contact.contactType === "user"
-        ? contact.linkedUserId.profil
-        : contact.customProfil,
+        ? contact.linkedUserId.profile
+        : contact.customProfile,
     wishList:
       contact.contactType === "user"
         ? contact.linkedUserId.wishList
@@ -27,7 +27,7 @@ export const getAllContacts = async (req, res) => {
   const ownerId = req.userId;
   // const user = await User.findById(ownerId);
   const contacts = await Contact.find({ ownerId }).populate([
-    { path: "linkedUserId", select: "profil wishList" },
+    { path: "linkedUserId", select: "profile wishList" },
   ]);
   const formatted = contacts.map(formContact);
   res.status(200).json(formatted);
@@ -36,7 +36,7 @@ export const getAllContacts = async (req, res) => {
 // create a new contact or linked user
 export const createContact = async (req, res) => {
   const ownerId = req.userId;
-  const { contactType, linkedUserId, customProfil } = req.body;
+  const { contactType, linkedUserId, customProfile } = req.body;
 
   let contact;
 
@@ -71,9 +71,9 @@ export const createContact = async (req, res) => {
 
   // =========================== custom contact ==========================
   else if (contactType === "custom") {
-    if (!customProfil?.name || !customProfil?.birthday) {
+    if (!customProfile?.name || !customProfile?.birthday) {
       throw new Error(
-        "customProfil with name and birthday is required for contactType 'custom'",
+        "customProfile with name and birthday is required for contactType 'custom'",
         {
           cause: 400,
         }
@@ -88,7 +88,7 @@ export const createContact = async (req, res) => {
     contact = await Contact.create({
       ownerId,
       contactType,
-      customProfil,
+      customProfile,
     });
   } else {
     // TODO: contactType should be always added by creating
@@ -102,7 +102,7 @@ export const createContact = async (req, res) => {
   });
 
   // populate linkedUser for uniform respons
-  await contact.populate({ path: "linkedUserId", select: "profil wishList" });
+  await contact.populate({ path: "linkedUserId", select: "profile wishList" });
 
   console.log("populated contacts", contact);
 
@@ -118,7 +118,7 @@ export const getContact = async (req, res) => {
   const contact = await Contact.findOne({ _id: contactId, ownerId }).populate([
     { path: "givenGifts", populate: { path: "gift", model: "Gift" } },
     { path: "events", populate: { path: "gift", model: "Gift" } },
-    { path: "linkedUserId", select: "profil wishList" },
+    { path: "linkedUserId", select: "profile wishList" },
   ]);
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
@@ -136,7 +136,7 @@ export const updateContactNote = async (req, res) => {
     { _id: contactId, ownerId },
     { note },
     { new: true }
-  ).populate({ path: "linkedUserId", select: "profil wishList" });
+  ).populate({ path: "linkedUserId", select: "profile wishList" });
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
@@ -147,11 +147,10 @@ export const updateContactNote = async (req, res) => {
 export const updateContactProfile = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
-  const { customProfil } = req.body;
 
   const contact = await Contact.findOneAndUpdate(
     { _id: contactId, ownerId },
-    { customProfil },
+    { $set: { customProfile: req.body } },
     { new: true }
   );
 

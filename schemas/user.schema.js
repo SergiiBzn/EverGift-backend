@@ -10,7 +10,7 @@ export const userSchema = z.object({
     error:
       "Password needs to contain at least on upper, one lower case, one number and a special character.",
   }),
-  profil: z.object({
+  profile: z.object({
     name: z.string(),
     avatar: z.string(),
     birthday: z.date(),
@@ -40,7 +40,7 @@ export const userSchema = z.object({
 
 // register schema
 export const registerSchema = userSchema.omit({
-  profil: true,
+  profile: true,
   wishList: true,
   receivedGifts: true,
   contacts: true,
@@ -49,7 +49,7 @@ export const registerSchema = userSchema.omit({
 
 // login schema
 export const loginSchema = userSchema.omit({
-  profil: true,
+  profile: true,
   wishList: true,
   receivedGifts: true,
   contacts: true,
@@ -58,8 +58,10 @@ export const loginSchema = userSchema.omit({
 
 // update user profile schema
 export const updateUserSchema = z.object({
-  name: z.string("Name must be a string"),
-  avatar: z.string("Avatar must be a string"),
-  birthday: z.date("Birthday must be a date"),
-  tags: z.array(z.string("Tags must be an array of strings")),
+  profile: z.object({
+    name: z.string("Name must be a string"),
+    avatar: z.string("Avatar must be a string"),
+    birthday: z.date("Birthday must be a date"),
+    tags: z.array(z.string("Tags must be an array of strings")),
+  }),
 });

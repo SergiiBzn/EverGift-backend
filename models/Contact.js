@@ -2,12 +2,8 @@
 
 import { Schema, model } from "mongoose";
 import { Event, GivenGift, Gift, User } from "./index.js";
-
-//********** WishItem Schema for custom contacts **********/
-export const wishItemSchema = new Schema({
-  item: { type: String, required: true },
-  description: { type: String, optional: true },
-});
+import { profileSchema } from "./profileSchema.js";
+import { wishItemSchema } from "./wishListSchema.js";
 
 //********** contact Schema **********/
 
@@ -25,30 +21,9 @@ const contactSchema = new Schema({
     ref: "User",
   },
 
-  customProfil: {
-    name: {
-      type: String,
-      required: function () {
-        return this.contactType === "custom";
-      },
-    },
-    avatar: {
-      type: String,
-      default:
-        "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png",
-    },
-    birthday: {
-      type: Date,
-      required: function () {
-        return this.contactType === "custom";
-      },
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female", "other"],
-      default: "other",
-    },
-    tags: [String],
+  customProfile: {
+    type: profileSchema,
+    default: () => ({}),
   },
 
   customWishList: { type: [wishItemSchema], default: [] },
@@ -64,6 +39,7 @@ const contactSchema = new Schema({
   // },
 });
 
+// delete cascade
 contactSchema.pre("findOneAndDelete", async function (next) {
   const contact = await this.model.findOne(this.getQuery());
   if (!contact) throw new Error("Contact not found", { cause: 404 });
