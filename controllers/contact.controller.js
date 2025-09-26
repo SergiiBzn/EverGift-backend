@@ -32,7 +32,7 @@ export const getAllContacts = async (req, res) => {
   const formatted = contacts.map(formContact);
   res.status(200).json(formatted);
 };
-
+//********** POST /contacts **********
 // create a new contact or linked user
 export const createContact = async (req, res) => {
   const ownerId = req.userId;
@@ -79,12 +79,19 @@ export const createContact = async (req, res) => {
         }
       );
     }
+
+    // If the avatar is an empty string, delete it so the Mongoose default is used.
+    if (customProfil.avatar === "") {
+      delete customProfil.avatar;
+    }
+
     contact = await Contact.create({
       ownerId,
       contactType,
       customProfil,
     });
   } else {
+    // TODO: contactType should be always added by creating
     throw new Error("Invalid contact type", {
       cause: 400,
     });
@@ -97,9 +104,12 @@ export const createContact = async (req, res) => {
   // populate linkedUser for uniform respons
   await contact.populate({ path: "linkedUserId", select: "profil wishList" });
 
+  console.log("populated contacts", contact);
+
   res.status(201).json(formContact(contact));
 };
 
+//********** GET /contact/:id **********
 // get a specific contact by ID
 export const getContact = async (req, res) => {
   const ownerId = req.userId;

@@ -1,3 +1,5 @@
+/** @format */
+
 import { Router } from "express";
 import {
   createReceivedGift,
@@ -9,6 +11,7 @@ import {
 import {
   updateUserProfile,
   updateUserWishList,
+  getAllUsers,
 } from "../controllers/user.controller.js";
 import { validate } from "../middlewares/index.js";
 import { updateUserSchema } from "../schemas/user.schema.js";
@@ -23,6 +26,8 @@ import { updateWishListSchema } from "../schemas/contact.schema.js";
 const userRouter = Router();
 
 userRouter.route("/logout").delete(logout);
+
+userRouter.route("/allUsers").get(getAllUsers);
 userRouter
   .route("/me")
   .get(me)

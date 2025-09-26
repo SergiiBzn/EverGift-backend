@@ -3,6 +3,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { Contact } from "../models/index.js";
 
 //********** POST auth/register **********
 export const register = async (req, res) => {
@@ -100,7 +101,9 @@ export const logout = async (req, res) => {
 
 //********** GET users/me **********
 export const me = async (req, res) => {
-  const user = await User.findById(req.userId).populate(
+  // populate user contacts
+
+  /*  const user = await User.findById(req.userId).populate(
     {
       path: "receivedGifts",
       populate: { path: "gift", model: "Gift" },
@@ -109,13 +112,30 @@ export const me = async (req, res) => {
     //   path: "contacts",
     //   populate: { path: "customProfil", model: "Contact" },
     // }
-  );
+  ); */
+
+  const user = await User.findById(req.userId).populate([
+    {
+      path: "receivedGifts",
+      populate: { path: "gift", model: "Gift" },
+    },
+    {
+      path: "contacts",
+      model: "Contact",
+      populate: {
+        path: "ownerId",
+        model: "User",
+      },
+    },
+  ]);
 
   if (!user) {
     throw new Error("Not Authenticated", {
       cause: 401,
     });
   }
+
+  console.log("user from me after populate", user);
 
   res.json(user);
 };
