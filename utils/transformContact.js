@@ -13,6 +13,7 @@ export const transformContact = (contact) => {
       _id: contact._id,
       name: contact.customProfile?.name || "",
       avatar: contact.customProfile?.avatar || "",
+      slug: contact.slug,
     };
   }
 
@@ -21,10 +22,11 @@ export const transformContact = (contact) => {
       _id: contact._id,
       name: contact.linkedUserId.profile?.name || "",
       avatar: contact.linkedUserId.profile?.avatar || "",
+      slug: contact.slug,
     };
   }
 
-  return { _id: contact._id, name: "", avatar: "" };
+  return { _id: contact._id, name: "", avatar: "", slug: contact.slug };
 };
 
 /**
