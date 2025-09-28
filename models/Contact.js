@@ -1,9 +1,8 @@
-import { Schema, model } from "mongoose";
-import { Event, GivenGift, Gift, User } from "./index.js";
+import mongoose, { Schema, model } from "mongoose";
+import { GivenGift, User, Event } from "./index.js";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
-
-//********** contact Schema **********/
+import { generateUniqueSlug } from "../utils/index.js"; //********** contact Schema **********/
 
 const contactSchema = new Schema({
   ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -30,11 +29,44 @@ const contactSchema = new Schema({
   givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
   events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 
+  slug: {
+    type: String,
+
+    unique: true,
+  },
+
   //  status: {
   //   type: String,
   //   enum: ['pending', 'accepted', 'blocked'],
   //   default: 'accepted' // custom contact default: accepted
   // },
+});
+
+// Pre-save hook to generate slug from custom contact name
+contactSchema.pre("save", async function (next) {
+  if (this.isNew || this.isModified("customProfile")) {
+    if (this.contactType === "user") {
+      // When contactType is 'user', the slug is derived from the linked user's slug.
+      // We need to fetch the User document to get its slug.
+      const User = mongoose.model("User");
+      const linkedUser = await User.findById(this.linkedUserId).select("slug");
+      if (linkedUser && linkedUser.slug) this.slug = linkedUser.slug;
+      else
+        throw new Error("Could not generate slug from linked user", {
+          cause: 404,
+        });
+    } else if (this.contactType === "custom") {
+      if (this.customProfile?.name) {
+        this.slug = await generateUniqueSlug(
+          mongoose.model("Contact"),
+          this.customProfile.name,
+          this._id
+        );
+      }
+      console.log("slug", this.slug);
+    }
+  }
+  next();
 });
 
 // delete cascade
@@ -52,7 +84,6 @@ contactSchema.pre("findOneAndDelete", async function (next) {
     const giftIds = givenGiftsToDelete
       .map((givenGift) => givenGift.gift)
       .filter((giftId) => giftId !== null);
-    console.log("giftIds", giftIds);
 
     if (giftIds.length) await Gift.deleteMany({ _id: { $in: giftIds } });
     await GivenGift.deleteMany({ _id: { $in: contact.givenGifts } });
