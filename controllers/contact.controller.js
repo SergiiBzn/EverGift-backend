@@ -1,10 +1,12 @@
 /** @format */
 
 import { Contact, GivenGift, Event, User, Gift } from "../models/index.js";
+
 /**
  * Helper: Format the contact output and unify the front-end structure
  */
 const formContact = (contact) => {
+  console.log(contact);
   return {
     id: contact._id,
     contactType: contact.contactType,
@@ -37,6 +39,15 @@ export const getAllContacts = async (req, res) => {
 export const createContact = async (req, res) => {
   const ownerId = req.userId;
   const { contactType, linkedUserId, customProfile } = req.body;
+
+  //! take the secure url from cloudinary
+  const imageUrl = req.file?.secure_url;
+
+  // The final avatar URL: prioritize the uploaded file, then the URL from the form, then a default.
+  const finalAvatarUrl =
+    imageUrl ||
+    customProfile?.avatar ||
+    "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png";
 
   let contact;
 
@@ -71,25 +82,34 @@ export const createContact = async (req, res) => {
 
   // =========================== custom contact ==========================
   else if (contactType === "custom") {
-    if (!customProfile?.name || !customProfile?.birthday) {
+    /*  if (!customProfile?.name || !customProfile?.birthday) {
       throw new Error(
         "customProfile with name and birthday is required for contactType 'custom'",
         {
           cause: 400,
         }
       );
-    }
+    } */
 
-    // If the avatar is an empty string, delete it so the Mongoose default is used.
-    if (customProfil.avatar === "") {
-      delete customProfil.avatar;
-    }
+    /*  // If the avatar is an empty string, delete it so the Mongoose default is used.
+    if (customProfile.avatar === "") {
+      delete customProfile.avatar;
+    } */
+
+    // 4. Assemble the customProfile object with all the data
+
+    const customProfileData = {
+      ...customProfile,
+      avatar: finalAvatarUrl,
+    };
 
     contact = await Contact.create({
       ownerId,
       contactType,
-      customProfile,
+      customProfile: customProfileData,
     });
+
+    console.log("created contact", contact);
   } else {
     // TODO: contactType should be always added by creating
     throw new Error("Invalid contact type", {
@@ -104,7 +124,7 @@ export const createContact = async (req, res) => {
   // populate linkedUser for uniform respons
   await contact.populate({ path: "linkedUserId", select: "profile wishList" });
 
-  console.log("populated contacts", contact);
+  // console.log("populated contacts", contact);
 
   res.status(201).json(formContact(contact));
 };
