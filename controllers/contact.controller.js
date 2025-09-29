@@ -7,7 +7,6 @@ import { transformContacts } from "../utils/transformContact.js";
  * Helper: Format the contact output and unify the front-end structure
  */
 const formContact = (contact) => {
-  console.log(contact);
   return {
     id: contact._id,
     contactType: contact.contactType,
@@ -43,14 +42,13 @@ export const createContact = async (req, res) => {
   const ownerId = req.userId;
   const { contactType, linkedUserId, customProfile } = req.body;
 
+  const defaultAvatar =
+    "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png";
   //! take the secure url from cloudinary
   const imageUrl = req.file?.secure_url;
 
   // The final avatar URL: prioritize the uploaded file, then the URL from the form, then a default.
-  const finalAvatarUrl =
-    imageUrl ||
-    customProfile?.avatar ||
-    "https://www.pngplay.com/wp-content/uploads/12/User-Avatar-Profile-PNG-Pic-Clip-Art-Background.png";
+  const finalAvatarUrl = imageUrl || customProfile?.avatar || defaultAvatar;
 
   let contact;
 
@@ -64,7 +62,7 @@ export const createContact = async (req, res) => {
     if (!linkedUser) {
       throw new Error("Linked user not found", { cause: 404 });
     }
-    if (linkedUserId === ownerId) {
+    if (linkedUserId.toString() === ownerId.toString()) {
       throw new Error("Cannot add yourself as a contact", { cause: 400 });
     }
     const alreadyContact = user.contacts.some(
