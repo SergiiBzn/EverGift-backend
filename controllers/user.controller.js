@@ -13,14 +13,23 @@ export const getAllUsers = async (req, res) => {
 //********** PUT /users/profile **********
 export const updateUserProfile = async (req, res) => {
   const userId = req.userId;
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $set: { profile: req.body } },
-    { new: true }
-  );
+  const user = await User.findById(userId);
   if (!user) {
     throw new Error("User not found", { cause: 404 });
   }
+  const updateData = { ...req.body };
+  if (req.file) {
+    updateData.avatar = req.file.secure_url || req.file.url;
+  }
+  if (updateData.tags && typeof updateData.tags == "string") {
+    try {
+      updateData.tags = JSON.parse(updateData.tags);
+    } catch (error) {
+      console.error("Error parsing tags:", error);
+    }
+  }
+  user.profile = { ...user.profile, ...updateData };
+  await user.save();
   res.json(user.profile);
 };
 

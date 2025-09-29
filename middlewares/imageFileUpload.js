@@ -36,7 +36,7 @@ const uploadFile = multer({
   storage: cloudinaryStorage,
   limits: { fileSize: maxSize }, // Limit file size to 6MB
   fileFilter: filter,
-}).single("imageFile"); //name of the field in the form where the file is uploaded
+}).single("avatar"); //name of the field in the form where the file is uploaded
 
 console.log("uploadFile", uploadFile);
 
