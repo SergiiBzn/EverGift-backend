@@ -1,6 +1,7 @@
 /** @format */
 
-import { Contact, GivenGift, Event, User, Gift } from "../models/index.js";
+import { Contact, User } from "../models/index.js";
+import { transformContacts } from "../utils/transformContact.js";
 
 /**
  * Helper: Format the contact output and unify the front-end structure
@@ -21,6 +22,7 @@ const formContact = (contact) => {
       contact.contactType === "user"
         ? contact.linkedUserId.wishList
         : contact.customWishList,
+    slug: contact.slug,
   };
 };
 
@@ -29,9 +31,10 @@ export const getAllContacts = async (req, res) => {
   const ownerId = req.userId;
   // const user = await User.findById(ownerId);
   const contacts = await Contact.find({ ownerId }).populate([
-    { path: "linkedUserId", select: "profile wishList" },
+    { path: "linkedUserId", select: "profile wishList slug" },
   ]);
-  const formatted = contacts.map(formContact);
+  const formatted = transformContacts(contacts);
+
   res.status(200).json(formatted);
 };
 //********** POST /contacts **********
@@ -124,8 +127,6 @@ export const createContact = async (req, res) => {
   // populate linkedUser for uniform respons
   await contact.populate({ path: "linkedUserId", select: "profile wishList" });
 
-  // console.log("populated contacts", contact);
-
   res.status(201).json(formContact(contact));
 };
 
@@ -138,7 +139,7 @@ export const getContact = async (req, res) => {
   const contact = await Contact.findOne({ _id: contactId, ownerId }).populate([
     { path: "givenGifts", populate: { path: "gift", model: "Gift" } },
     { path: "events", populate: { path: "gift", model: "Gift" } },
-    { path: "linkedUserId", select: "profile wishList" },
+    { path: "linkedUserId", select: "profile wishList slug" },
   ]);
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
@@ -156,7 +157,7 @@ export const updateContactNote = async (req, res) => {
     { _id: contactId, ownerId },
     { note },
     { new: true }
-  ).populate({ path: "linkedUserId", select: "profile wishList" });
+  ).populate({ path: "linkedUserId", select: "profile wishList slug" });
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 
@@ -168,13 +169,19 @@ export const updateContactProfile = async (req, res) => {
   const ownerId = req.userId;
   const { contactId } = req.params;
 
-  const contact = await Contact.findOneAndUpdate(
-    { _id: contactId, ownerId },
-    { $set: { customProfile: req.body } },
-    { new: true }
-  );
+  const contact = await Contact.findOne({ _id: contactId, ownerId });
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
+  if (contact.contactType === "user") {
+    throw new Error("Cannot update profile of a user contact", { cause: 400 });
+  }
+  contact.customProfile = { ...contact.customProfile, ...req.body };
+  await contact.save();
+  // populate linkedUser for uniform response
+  await contact.populate({
+    path: "linkedUserId",
+    select: "profile wishList slug",
+  });
 
   res.status(200).json(formContact(contact));
 };
