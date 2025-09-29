@@ -3,7 +3,7 @@
 import mongoose, { Schema, model } from "mongoose";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
-
+import Contact from "./Contact.js";
 import { generateUniqueSlug } from "../utils/index.js";
 const userSchema = new Schema({
   email: {
