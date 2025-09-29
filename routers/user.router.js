@@ -22,6 +22,7 @@ import {
 import { deleteUser } from "../controllers/auth.controller.js";
 import { me, updateUser, logout } from "../controllers/auth.controller.js";
 import { updateWishListSchema } from "../schemas/contact.schema.js";
+import uploadFile from "../middlewares/imageFileUpload.js";
 
 const userRouter = Router();
 
@@ -35,7 +36,7 @@ userRouter
   .delete(deleteUser);
 
 //********** profile **********
-userRouter.route("/profile").put(updateUserProfile);
+userRouter.route("/profile").put(uploadFile, updateUserProfile);
 userRouter
   .route("/wishList")
   .put(validate(updateWishListSchema), updateUserWishList);

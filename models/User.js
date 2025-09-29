@@ -1,6 +1,6 @@
 /** @format */
 
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
 
@@ -36,7 +36,7 @@ const userSchema = new Schema({
   events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 });
 
-userSchema.pre("save", async function (doc, next) {
+userSchema.pre("save", async function () {
   if (this.isNew || this.isModified("profile.name")) {
     if (this.profile?.name) {
       this.slug = await generateUniqueSlug(
@@ -53,24 +53,22 @@ userSchema.pre("save", async function (doc, next) {
       );
     }
   }
-  next();
 });
 
-userSchema.pre("save", async function (doc, next) {
+userSchema.pre("save", async function () {
   if (this.isModified("slug")) {
     try {
       await Contact.updateMany(
-        { ownerId: this._id },
+        { linkedUserId: this._id },
         { $set: { slug: this.slug } }
       );
     } catch (error) {
       console.error(
-        `Error syncing slug for user ${doc._id} to contacts:`,
+        `Error syncing slug for user ${this._id} to contacts:`,
         error
       );
     }
   }
-  next();
 });
 const User = model("User", userSchema);
 
