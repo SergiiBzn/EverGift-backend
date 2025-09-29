@@ -5,9 +5,12 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { transformContacts } from "../utils/transformContact.js";
 
-//********** POST users/register **********
+//********** POST auth/register **********
 export const register = async (req, res) => {
   const { email, password } = req.body;
+
+  // input validation is made by zod
+
   // check if the user already exists
   const existingUser = await User.exists({
     email,
@@ -35,7 +38,7 @@ export const register = async (req, res) => {
   res.json(user);
 };
 
-//********** POST users/login **********
+//********** POST auth/login **********
 export const login = async (req, res) => {
   // login
   const { email, password } = req.body;
@@ -114,10 +117,10 @@ export const me = async (req, res) => {
   ]);
   if (!userDoc) {
     throw (
-      (new Error("Not Authenticated"),
+      new Error("Not Authenticated"),
       {
         cause: 401,
-      })
+      }
     );
   }
   // transform contacts

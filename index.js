@@ -2,7 +2,12 @@
 
 import express from "express";
 import chalk from "chalk";
+import path from "path";
+
+import multer from "multer";
 import cors from "cors";
+
+import { getDirname } from "./utils/dirname.js";
 import cookieParser from "cookie-parser";
 import "./db/index.js";
 import { errorHandler, authenticate } from "./middlewares/index.js";
@@ -31,7 +36,19 @@ app.use(
   })
 );
 
-app.use(express.json(), cookieParser());
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: false,
+  })
+);
+
+app.use(cookieParser());
+
+// get the dirname of the current file
+const { __dirname, __filename } = getDirname(import.meta.url);
+// Serve static files from the public folder
+app.use(express.static(path.join(__dirname, "public"))); //backend/public
 
 app.get("/health", async (_req, res) => {
   res.json({ msg: "Running" });

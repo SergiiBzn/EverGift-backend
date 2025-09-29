@@ -1,5 +1,7 @@
+/** @format */
+
 import mongoose, { Schema, model } from "mongoose";
-import { GivenGift, User, Event } from "./index.js";
+import { GivenGift, User, Event, Gift } from "./index.js";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
 import { generateUniqueSlug } from "../utils/index.js"; //********** contact Schema **********/

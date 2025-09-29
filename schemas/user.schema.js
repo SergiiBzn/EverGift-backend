@@ -5,7 +5,7 @@ import { z } from "zod/v4";
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!.@#$%^&*])/;
 
 export const userSchema = z.object({
-  email: z.string().trim().email(),
+  email: z.string().trim().email("email should be a valid email"),
   password: z.string().min(8).max(512).regex(passwordRegex, {
     error:
       "Password needs to contain at least on upper, one lower case, one number and a special character.",

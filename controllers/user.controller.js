@@ -2,6 +2,13 @@
 
 import { User } from "../models/index.js";
 
+//********** GET /users/all **********
+
+export const getAllUsers = async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+};
+
 // profile update and wishList update
 //********** PUT /users/profile **********
 export const updateUserProfile = async (req, res) => {
