@@ -38,6 +38,6 @@ const uploadFile = multer({
   fileFilter: filter,
 }).single("avatar"); //name of the field in the form where the file is uploaded
 
-console.log("uploadFile", uploadFile);
+// console.log("uploadFile", uploadFile);
 
 export default uploadFile;

@@ -48,13 +48,15 @@ import uploadFile from "../middlewares/imageFileUpload.js";
 import { restructureContactBody } from "../middlewares/restructureContactBody.js";
 const contactRouter = Router();
 
-contactRouter.route("/").get(getAllContacts).post(
-  uploadFile,
-
-  restructureContactBody,
-  validate(createContactSchema),
-  createContact
-);
+contactRouter
+  .route("/")
+  .get(getAllContacts)
+  .post(
+    uploadFile,
+    restructureContactBody,
+    validate(createContactSchema),
+    createContact
+  );
 // get and delete contact by ID
 contactRouter.route("/:contactId").get(getContact).delete(deleteContact);
 
