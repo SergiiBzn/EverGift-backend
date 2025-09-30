@@ -65,7 +65,6 @@ contactSchema.pre("save", async function (next) {
           this._id
         );
       }
-      console.log("slug", this.slug);
     }
   }
   next();
