@@ -22,7 +22,6 @@ import {
   validate,
   checkContact,
   restructureContactBody,
-  parseCustomProfile,
   uploadFile,
 } from "../middlewares/index.js";
 import {

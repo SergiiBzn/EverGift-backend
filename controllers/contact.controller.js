@@ -152,14 +152,24 @@ export const updateContactProfile = async (req, res) => {
   const ownerId = req.userId;
   const { contactSlug } = req.params;
   const { customProfile } = req.body;
-
   const contact = await Contact.findOne({ slug: contactSlug, ownerId });
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
   if (contact.contactType === "user") {
     throw new Error("Cannot update profile of a user contact", { cause: 400 });
   }
-  contact.customProfile = customProfile;
+  const updateData = { ...customProfile };
+
+  if (req.file) updateData.avatar = req.file.secure_url || req.file.url;
+
+  if (updateData.tags && typeof updateData.tags == "string") {
+    try {
+      updateData.tags = JSON.parse(updateData.tags);
+    } catch (error) {
+      console.error("Error parsing tags:", error);
+    }
+  }
+  contact.customProfile = { ...contact.customProfile, ...updateData };
   await contact.save();
   // populate linkedUser for uniform response
   await contact.populate({
