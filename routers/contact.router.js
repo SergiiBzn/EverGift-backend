@@ -49,6 +49,7 @@ import {
 // import { restructureContactBody, parseCustomProfile ,uploadFile} from "../middlewares/index.js";
 const contactRouter = Router();
 
+
 contactRouter.route("/").get(getAllContacts).post(
   uploadFile,
 
@@ -58,6 +59,7 @@ contactRouter.route("/").get(getAllContacts).post(
 );
 // get and delete contact by Slug
 contactRouter.route("/:contactSlug").get(getContact).delete(deleteContact);
+
 
 // update contact note
 contactRouter

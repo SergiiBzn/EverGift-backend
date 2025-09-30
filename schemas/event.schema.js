@@ -1,3 +1,5 @@
+/** @format */
+
 import { z } from "zod/v4";
 import { giftSchema } from "./gift.schema.js";
 
@@ -5,7 +7,9 @@ import { giftSchema } from "./gift.schema.js";
 const giftForEventSchema = giftSchema.omit({ date: true });
 
 export const createEventSchema = z.object({
+  // title should be unique
   title: z.string().trim().min(1, "Title is required"),
+
   date: z.coerce.date({ required_error: "Date is required" }),
   isRepeat: z.enum(["yearly", "none"]).optional(),
   isPinned: z.boolean().optional(),
@@ -29,4 +33,3 @@ export const updateEventSchema = z
       v.gift !== undefined,
     { message: "Provide at least one field to update" }
   );
-

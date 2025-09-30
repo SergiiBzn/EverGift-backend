@@ -1,3 +1,5 @@
+/** @format */
+
 import { Event, Contact, Gift, User } from "../models/index.js";
 
 // GET /contacts/:contactId/events
@@ -33,7 +35,15 @@ export const getEvent = async (req, res) => {
 export const createEvent = async (req, res) => {
   try {
     const { contactId } = req.params;
-    const { gift, date } = req.body;
+    const { gift, title, date } = req.body;
+
+    const existEvent = await Event.findOne({ contactId, title });
+
+    if (existEvent) {
+      throw new Error("Event already exist", {
+        cause: 400,
+      });
+    }
 
     const contact = await Contact.findById(contactId);
     if (!contact) return res.status(404).json({ message: "Contact not found" });
@@ -60,7 +70,9 @@ export const createEvent = async (req, res) => {
     });
 
     const populated = await created.populate("gift");
-    return res.status(201).json(populated);
+
+    const populatedEventContact = await populated.populate("contactId");
+    return res.status(201).json(populatedEventContact);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;
     return res

@@ -13,6 +13,7 @@ export const getAllUsers = async (req, res) => {
 //********** PUT /users/profile **********
 export const updateUserProfile = async (req, res) => {
   const userId = req.userId;
+  console.log(req.body);
   const user = await User.findById(userId);
   if (!user) {
     throw new Error("User not found", { cause: 404 });
