@@ -1,3 +1,5 @@
+/** @format */
+
 import { Schema, model } from "mongoose";
 
 const eventSchema = new Schema(
@@ -15,6 +17,9 @@ const eventSchema = new Schema(
     title: {
       type: String,
       required: true,
+      unique: true, // ✅ unique Index
+      lowercase: true, // ✅ automatisch lowercase speichern
+      trim: true, // ✅ Whitespace entfernen
     },
     gift: {
       type: Schema.Types.ObjectId,
