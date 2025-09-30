@@ -21,6 +21,8 @@ import {
   checkCustomContact,
   validate,
   checkContact,
+  restructureContactBody,
+  uploadFile,
 } from "../middlewares/index.js";
 import {
   createEventSchema,
@@ -44,38 +46,39 @@ import {
   updateWishListSchema,
 } from "../schemas/contact.schema.js";
 
-import uploadFile from "../middlewares/imageFileUpload.js";
-import { restructureContactBody } from "../middlewares/restructureContactBody.js";
+// import { restructureContactBody, parseCustomProfile ,uploadFile} from "../middlewares/index.js";
 const contactRouter = Router();
 
-contactRouter
-  .route("/")
-  .get(getAllContacts)
-  .post(
-    uploadFile,
-    restructureContactBody,
-    validate(createContactSchema),
-    createContact
-  );
-// get and delete contact by ID
-contactRouter.route("/:contactId").get(getContact).delete(deleteContact);
+
+contactRouter.route("/").get(getAllContacts).post(
+  uploadFile,
+
+  restructureContactBody,
+  validate(createContactSchema),
+  createContact
+);
+// get and delete contact by Slug
+contactRouter.route("/:contactSlug").get(getContact).delete(deleteContact);
+
 
 // update contact note
 contactRouter
-  .route("/:contactId/note")
+  .route("/:contactSlug/note")
   .put(validate(updateContactNoteSchema), updateContactNote);
 
 // update contact profile and wishlist if custom contact
 contactRouter
-  .route("/:contactId/profile")
+  .route("/:contactSlug/profile")
   .put(
+    uploadFile,
     checkCustomContact,
+    restructureContactBody,
     validate(updateContactProfileSchema),
     updateContactProfile
   );
 
 contactRouter
-  .route("/:contactId/wishlist")
+  .route("/:contactSlug/wishlist")
   .put(
     checkCustomContact,
     validate(updateWishListSchema),

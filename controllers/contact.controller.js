@@ -83,22 +83,6 @@ export const createContact = async (req, res) => {
 
   // =========================== custom contact ==========================
   else if (contactType === "custom") {
-    /*  if (!customProfile?.name || !customProfile?.birthday) {
-      throw new Error(
-        "customProfile with name and birthday is required for contactType 'custom'",
-        {
-          cause: 400,
-        }
-      );
-    } */
-
-    /*  // If the avatar is an empty string, delete it so the Mongoose default is used.
-    if (customProfile.avatar === "") {
-      delete customProfile.avatar;
-    } */
-
-    // 4. Assemble the customProfile object with all the data
-
     const customProfileData = {
       ...customProfile,
       avatar: finalAvatarUrl,
@@ -109,8 +93,6 @@ export const createContact = async (req, res) => {
       contactType,
       customProfile: customProfileData,
     });
-
-    console.log("created contact", contact);
   } else {
     // TODO: contactType should be always added by creating
     throw new Error("Invalid contact type", {
@@ -128,13 +110,16 @@ export const createContact = async (req, res) => {
   res.status(201).json(formContact(contact));
 };
 
-//********** GET /contact/:id **********
-// get a specific contact by ID
+//********** GET /contacts/:ContactSlug **********
+// get a specific contact by Slug
 export const getContact = async (req, res) => {
   const ownerId = req.userId;
-  const { contactId } = req.params;
+  const { contactSlug } = req.params;
 
-  const contact = await Contact.findOne({ _id: contactId, ownerId }).populate([
+  const contact = await Contact.findOne({
+    slug: contactSlug,
+    ownerId,
+  }).populate([
     { path: "givenGifts", populate: { path: "gift", model: "Gift" } },
     { path: "events", populate: { path: "gift", model: "Gift" } },
     { path: "linkedUserId", select: "profile wishList slug" },
@@ -148,11 +133,11 @@ export const getContact = async (req, res) => {
 //==================== update a contact note by ID==========================
 export const updateContactNote = async (req, res) => {
   const ownerId = req.userId;
-  const { contactId } = req.params;
+  const { contactSlug } = req.params;
   const { note } = req.body;
 
   const contact = await Contact.findOneAndUpdate(
-    { _id: contactId, ownerId },
+    { slug: contactSlug, ownerId },
     { note },
     { new: true }
   ).populate({ path: "linkedUserId", select: "profile wishList slug" });
@@ -165,15 +150,26 @@ export const updateContactNote = async (req, res) => {
 //==================== update a contact Profile by ID==========================
 export const updateContactProfile = async (req, res) => {
   const ownerId = req.userId;
-  const { contactId } = req.params;
-
-  const contact = await Contact.findOne({ _id: contactId, ownerId });
+  const { contactSlug } = req.params;
+  const { customProfile } = req.body;
+  const contact = await Contact.findOne({ slug: contactSlug, ownerId });
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
   if (contact.contactType === "user") {
     throw new Error("Cannot update profile of a user contact", { cause: 400 });
   }
-  contact.customProfile = { ...contact.customProfile, ...req.body };
+  const updateData = { ...customProfile };
+
+  if (req.file) updateData.avatar = req.file.secure_url || req.file.url;
+
+  if (updateData.tags && typeof updateData.tags == "string") {
+    try {
+      updateData.tags = JSON.parse(updateData.tags);
+    } catch (error) {
+      console.error("Error parsing tags:", error);
+    }
+  }
+  contact.customProfile = { ...contact.customProfile, ...updateData };
   await contact.save();
   // populate linkedUser for uniform response
   await contact.populate({
@@ -187,10 +183,10 @@ export const updateContactProfile = async (req, res) => {
 //==================== update a contact wishlist by ID==========================
 export const updateContactWishList = async (req, res) => {
   const ownerId = req.userId;
-  const { contactId } = req.params;
+  const { contactSlug } = req.params;
 
   const contact = await Contact.findOneAndUpdate(
-    { _id: contactId, ownerId },
+    { slug: contactSlug, ownerId },
     { $set: { customWishList: req.body } },
     { new: true }
   );
@@ -204,9 +200,12 @@ export const updateContactWishList = async (req, res) => {
 
 export const deleteContact = async (req, res) => {
   const ownerId = req.userId;
-  const { contactId } = req.params;
+  const { contactSlug } = req.params;
 
-  const contact = await Contact.findOneAndDelete({ _id: contactId, ownerId });
+  const contact = await Contact.findOneAndDelete({
+    slug: contactSlug,
+    ownerId,
+  });
 
   if (!contact) throw new Error("Contact not found", { cause: 404 });
 

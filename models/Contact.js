@@ -46,7 +46,7 @@ const contactSchema = new Schema({
 
 // Pre-save hook to generate slug from custom contact name
 contactSchema.pre("save", async function (next) {
-  if (this.isNew || this.isModified("customProfile")) {
+  if (this.isNew || this.isModified("customProfile.name")) {
     if (this.contactType === "user") {
       // When contactType is 'user', the slug is derived from the linked user's slug.
       // We need to fetch the User document to get its slug.
@@ -65,7 +65,6 @@ contactSchema.pre("save", async function (next) {
           this._id
         );
       }
-      console.log("slug", this.slug);
     }
   }
   next();
