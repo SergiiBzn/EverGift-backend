@@ -85,7 +85,7 @@ export const createEvent = async (req, res) => {
     const finalEvent = {
       ...restOfEvent,
       contact: {
-        id: contactId._id,
+        id: contactId,
         profile: contactProfile,
         slug: contactId.slug,
       },
