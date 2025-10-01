@@ -114,7 +114,15 @@ export const me = async (req, res) => {
       path: "events",
       populate: [
         { path: "gift", model: "Gift" },
-        { path: "contactId", model: "Contact" },
+        {
+          path: "contactId",
+          model: "Contact",
+          populate: {
+            path: "linkedUserId",
+            model: "User",
+            select: "profile",
+          },
+        },
       ],
     },
   ]);
@@ -131,6 +139,26 @@ export const me = async (req, res) => {
   const user = userDoc.toObject();
   user.contacts = transformContacts(user.contacts);
 
+  // transform events to have a consistent structure
+  user.events = user.events.map((e) => {
+    if (!e.contactId) return e;
+    const isUserContact = e.contactId.contactType === "user";
+    const contactProfile = isUserContact
+      ? e.contactId.linkedUserId.profile
+      : e.contactId.customProfile;
+
+    // Destructure the original event to exclude the large contactId object
+    const { contactId, ...restOfEvent } = e;
+
+    return {
+      ...restOfEvent,
+      contact: {
+        id: contactId._id,
+        profile: contactProfile,
+        slug: contactId.slug,
+      },
+    };
+  });
   res.json(user);
 };
 
