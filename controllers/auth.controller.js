@@ -112,15 +112,18 @@ export const me = async (req, res) => {
     },
     {
       path: "events",
-      populate: { path: "gift", model: "Gift" },
+      populate: [
+        { path: "gift", model: "Gift" },
+        { path: "contactId", model: "Contact" },
+      ],
     },
   ]);
   if (!userDoc) {
     throw (
-      new Error("Not Authenticated"),
+      (new Error("Not Authenticated"),
       {
         cause: 401,
-      }
+      })
     );
   }
   // transform contacts
