@@ -71,8 +71,26 @@ export const createEvent = async (req, res) => {
 
     const populated = await created.populate("gift");
 
-    const populatedEventContact = await populated.populate("contactId");
-    return res.status(201).json(populatedEventContact);
+    const populatedEventContact = await populated.populate({
+      path: "contactId",
+      model: "Contact",
+      populate: { path: "linkedUserId", model: "User", select: "profile" },
+    });
+    const eventObject = populatedEventContact.toObject();
+    const { contactId: populatedContactId, ...restOfEvent } = eventObject;
+    const isUserContact = populatedContactId.contactType === "user";
+    const contactProfile = isUserContact
+      ? populatedContactId.linkedUserId.profile
+      : populatedContactId.customProfile;
+    const finalEvent = {
+      ...restOfEvent,
+      contact: {
+        id: contactId._id,
+        profile: contactProfile,
+        slug: contactId.slug,
+      },
+    };
+    return res.status(201).json(finalEvent);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;
     return res
