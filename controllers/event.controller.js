@@ -1,7 +1,36 @@
 /** @format */
 
 import { Event, Contact, Gift, User } from "../models/index.js";
+// format event object
 
+const formatEvent = async (eventDoc) => {
+  const populated = await eventDoc.populate([
+    {
+      path: "gift",
+      model: "Gift",
+    },
+    {
+      path: "contactId",
+      model: "Contact",
+      populate: { path: "linkedUserId", model: "User", select: "profile" },
+    },
+  ]);
+  const eventObject = populated.toObject();
+  const { contactId: populatedContact, ...restOfEvent } = eventObject;
+  const isUserContact = populatedContact.contactType === "user";
+  const contactProfile = isUserContact
+    ? populatedContact.linkedUserId.profile
+    : populatedContact.customProfile;
+  const finalEvent = {
+    ...restOfEvent,
+    contact: {
+      id: populatedContact._id,
+      profile: contactProfile,
+      slug: populatedContact.slug,
+    },
+  };
+  return finalEvent;
+};
 // GET /contacts/:contactId/events
 export const getAllEvents = async (req, res) => {
   try {
@@ -23,7 +52,8 @@ export const getEvent = async (req, res) => {
       "gift"
     );
     if (!event) return res.status(404).json({ message: "Event not found" });
-    return res.status(200).json(event);
+    const finalEvent = await formatEvent(event);
+    return res.status(200).json(finalEvent);
   } catch (err) {
     return res
       .status(500)
@@ -68,28 +98,8 @@ export const createEvent = async (req, res) => {
     await User.findByIdAndUpdate(contact.ownerId, {
       $push: { events: created._id },
     });
-
-    const populated = await created.populate("gift");
-
-    const populatedEventContact = await populated.populate({
-      path: "contactId",
-      model: "Contact",
-      populate: { path: "linkedUserId", model: "User", select: "profile" },
-    });
-    const eventObject = populatedEventContact.toObject();
-    const { contactId: populatedContactId, ...restOfEvent } = eventObject;
-    const isUserContact = populatedContactId.contactType === "user";
-    const contactProfile = isUserContact
-      ? populatedContactId.linkedUserId.profile
-      : populatedContactId.customProfile;
-    const finalEvent = {
-      ...restOfEvent,
-      contact: {
-        id: contactId._id,
-        profile: contactProfile,
-        slug: contactId.slug,
-      },
-    };
+    // format event object
+    const finalEvent = await formatEvent(created);
     return res.status(201).json(finalEvent);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;
@@ -103,21 +113,41 @@ export const createEvent = async (req, res) => {
 export const updateEvent = async (req, res) => {
   try {
     const { contactId, eventId } = req.params;
-    const { gift, date } = req.body;
-    // if gift is provided, create it first
-    if (gift) {
-      const createdGift = await Gift.create({ ...gift, date });
-      req.body.gift = createdGift._id;
+    const { date, isRepeat, isPinned, title, gift: giftUpdateData } = req.body;
+
+    // 1. Find the event first to get its current state, especially the gift ID
+    const eventToUpdate = await Event.findOne({ _id: eventId, contactId });
+    if (!eventToUpdate) {
+      return res.status(404).json({ message: "Event not found" });
     }
+
+    // 2. If a new date is provided and there's an associated gift, update the gift's date
+    if (eventToUpdate.gift) {
+      const giftPayload = {};
+      if (giftUpdateData && typeof giftUpdateData === "object") {
+        Object.assign(giftPayload, giftUpdateData);
+      }
+      if (Object.keys(giftPayload).length > 0) {
+        await Gift.findByIdAndUpdate(eventToUpdate.gift, giftPayload);
+      }
+    }
+
+    const eventPayload = {};
+    if (date) eventPayload.date = date;
+    if (title) eventPayload.title = title;
+    if (isPinned !== undefined) eventPayload.isPinned = isPinned;
+    if (isRepeat !== undefined) eventPayload.isRepeat = isRepeat;
 
     const updated = await Event.findOneAndUpdate(
       { _id: eventId, contactId },
-      req.body,
+      eventPayload,
       { new: true, runValidators: true }
-    ).populate("gift");
-    if (!updated) return res.status(404).json({ message: "Event not found" });
+    );
 
-    return res.status(200).json(updated);
+    if (!updated) return res.status(404).json({ message: "Event not found" });
+    // format event object
+    const finalEvent = await formatEvent(updated);
+    return res.status(200).json(finalEvent);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;
     return res
