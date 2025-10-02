@@ -122,25 +122,40 @@ export const updateEvent = async (req, res) => {
     }
 
     // 2. If a new date is provided and there's an associated gift, update the gift's date
-    if (eventToUpdate.gift) {
-      const giftPayload = {};
-      if (giftUpdateData && typeof giftUpdateData === "object") {
-        Object.assign(giftPayload, giftUpdateData);
-      }
-      if (Object.keys(giftPayload).length > 0) {
-        await Gift.findByIdAndUpdate(eventToUpdate.gift, giftPayload);
+    let giftId = eventToUpdate.gift;
+    // req body has giftUpdateData
+    if (giftUpdateData && typeof giftUpdateData === "object") {
+      const giftDetails = {
+        ...giftUpdateData,
+        date: date || eventToUpdate.date,
+      };
+
+      if (giftId) {
+        // if giftId exists, update it
+        await Gift.findByIdAndUpdate(giftId, giftDetails);
+      } else {
+        // if giftId does not exist, create a new one
+        const newGift = await Gift.create(giftDetails);
+        giftId = newGift._id;
       }
     }
+    // if giftUpdateData is null and giftId exists, delete the gift
+    else if (giftUpdateData === null && giftId) {
+      await Gift.findByIdAndDelete(giftId);
+      giftId = null; // set giftId to null after deletion
+    }
+    let payload = {};
+    //  Update the event with the new payload
+    payload.gift = giftId;
 
-    const eventPayload = {};
-    if (date) eventPayload.date = date;
-    if (title) eventPayload.title = title;
-    if (isPinned !== undefined) eventPayload.isPinned = isPinned;
-    if (isRepeat !== undefined) eventPayload.isRepeat = isRepeat;
+    if (date) payload.date = date;
+    if (title) payload.title = title;
+    if (isPinned !== undefined) payload.isPinned = isPinned;
+    if (isRepeat) payload.isRepeat = isRepeat;
 
     const updated = await Event.findOneAndUpdate(
       { _id: eventId, contactId },
-      eventPayload,
+      payload,
       { new: true, runValidators: true }
     );
 
