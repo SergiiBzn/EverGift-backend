@@ -5,7 +5,7 @@ import { User } from "../models/index.js";
 //********** GET /users/all **********
 
 export const getAllUsers = async (req, res) => {
-  const users = await User.find();
+  const users = await User.find().select("email");
   res.json(users);
 };
 
