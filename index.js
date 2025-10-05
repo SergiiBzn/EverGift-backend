@@ -74,7 +74,8 @@ app.use("/contacts", contactRouter);
 app.use("/requests", requestRouter);
 app.use("/notifications", notificationRouter);
 
-app.use("/{*splat}", (req, _res) => {
+app.all("*", (req, _res, next) => {
+  if (req.method === "OPTIONS") return next(); // let CORS handle it
   throw new Error(`URL unavailable; you used ${req.originalUrl}`, {
     cause: 404,
   });
