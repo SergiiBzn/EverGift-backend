@@ -46,8 +46,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -76,8 +74,7 @@ app.use("/contacts", contactRouter);
 app.use("/requests", requestRouter);
 app.use("/notifications", notificationRouter);
 
-app.all("*", (req, _res, next) => {
-  if (req.method === "OPTIONS") return next(); // let CORS handle it
+app.use("/{*splat}", (req, _res) => {
   throw new Error(`URL unavailable; you used ${req.originalUrl}`, {
     cause: 404,
   });
