@@ -4,14 +4,19 @@ import express from "express";
 import chalk from "chalk";
 import path from "path";
 
-import multer from "multer";
 import cors from "cors";
 
 import { getDirname } from "./utils/dirname.js";
 import cookieParser from "cookie-parser";
 import "./db/index.js";
 import { errorHandler, authenticate } from "./middlewares/index.js";
-import { userRouter, contactRouter, authRouter } from "./routers/index.js";
+import {
+  userRouter,
+  contactRouter,
+  authRouter,
+  requestRouter,
+  notificationRouter,
+} from "./routers/index.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -41,7 +46,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -67,8 +71,11 @@ app.use("/auth", authRouter);
 app.use(authenticate);
 app.use("/users", userRouter);
 app.use("/contacts", contactRouter);
+app.use("/requests", requestRouter);
+app.use("/notifications", notificationRouter);
 
-app.use("/{*splat}", (req, _res) => {
+app.all("*", (req, _res, next) => {
+  if (req.method === "OPTIONS") return next(); // let CORS handle it
   throw new Error(`URL unavailable; you used ${req.originalUrl}`, {
     cause: 404,
   });

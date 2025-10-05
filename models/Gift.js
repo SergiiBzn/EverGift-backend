@@ -15,7 +15,8 @@ const giftSchema = new Schema(
         return ret;
       },
     },
-  }
+  },
+  { timestamps: true }
 );
 
 const Gift = model("Gift", giftSchema);

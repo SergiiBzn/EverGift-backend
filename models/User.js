@@ -1,40 +1,47 @@
-/** @format */
-
 import mongoose, { Schema, model } from "mongoose";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
 import Contact from "./Contact.js";
 import { generateUniqueSlug } from "../utils/index.js";
-const userSchema = new Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    select: false,
-  },
-  profile: {
-    type: profileSchema,
-    default: () => ({}),
-  },
-  slug: {
-    type: String,
-
-    unique: true,
-  },
-  wishList: [{ type: wishItemSchema, default: [] }],
-  receivedGifts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "ReceivedGift",
+const userSchema = new Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
-  ],
-  contacts: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
-  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
-});
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
+    profile: {
+      type: profileSchema,
+      default: () => ({}),
+    },
+    slug: {
+      type: String,
+
+      unique: true,
+    },
+    wishList: [{ type: wishItemSchema, default: [] }],
+    receivedGifts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ReceivedGift",
+      },
+    ],
+    contacts: [{ type: Schema.Types.ObjectId, ref: "Contact" }],
+    events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
+
+    // flag to check if  has a notification
+    hasNotification: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
 userSchema.pre("save", async function () {
   if (this.isNew || this.isModified("profile.name")) {
