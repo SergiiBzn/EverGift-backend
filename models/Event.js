@@ -1,5 +1,3 @@
-/** @format */
-
 import { Schema, model } from "mongoose";
 
 const eventSchema = new Schema(
@@ -39,6 +37,7 @@ const eventSchema = new Schema(
       required: true,
     },
   },
+
   {
     toJSON: {
       transform: (doc, ret) => {
@@ -48,7 +47,8 @@ const eventSchema = new Schema(
         return ret;
       },
     },
-  }
+  },
+  { timestamps: true }
 );
 
 const Event = model("Event", eventSchema);
