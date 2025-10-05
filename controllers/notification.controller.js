@@ -16,8 +16,8 @@ export const getNotifications = async (req, res) => {
     ])
     .sort({ createdAt: -1 });
 
-  const hasUnread = await Notification.exists({ userId, isRead: false });
-  await User.findByIdAndUpdate(userId, { hasNotification: !!hasUnread });
+  const hasUnread = await Notification.exists({ userId, handled: false });
+  await User.findByIdAndUpdate(userId, { hasNotifications: !!hasUnread });
 
   const newNotifications = notifications.filter((n) => !n.handled);
   const historyNotifications = notifications.filter((n) => n.handled);
@@ -39,6 +39,7 @@ export const updateNotification = async (req, res) => {
   switch (action) {
     case "read": {
       notification.isRead = true;
+      notification.handled = true;
       await notification.save();
       break;
     }
