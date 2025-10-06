@@ -67,14 +67,6 @@ export const createEvent = async (req, res) => {
     const { contactId } = req.params;
     const { gift, title, date } = req.body;
 
-    /*     const existEvent = await Event.findOne({ contactId, title });
-
-    if (existEvent) {
-      throw new Error("Event already exist", {
-        cause: 400,
-      });
-    } */
-
     const contact = await Contact.findById(contactId);
     if (!contact) return res.status(404).json({ message: "Contact not found" });
 
@@ -100,6 +92,7 @@ export const createEvent = async (req, res) => {
     });
     // format event object
     const finalEvent = await formatEvent(created);
+
     return res.status(201).json(finalEvent);
   } catch (err) {
     const status = err?.name === "ValidationError" ? 400 : 500;

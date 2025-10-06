@@ -1,6 +1,6 @@
 /** @format */
 
-import { User } from "../models/index.js";
+import { User, Contact } from "../models/index.js";
 
 //********** GET /users/all **********
 
@@ -13,6 +13,17 @@ export const searchUsers = async (req, res) => {
     email: { $regex: email, $options: "i" },
   }).select("email profile.name profile.avatar");
 
+  // check if user exists in contacts
+  if (user) {
+    const existContact = await Contact.findOne({
+      ownerId: req.userId,
+      contactType: "user",
+      linkedUserId: user._id,
+    });
+    if (existContact) {
+      throw new Error("User is already in your contacts", { cause: 400 });
+    }
+  }
   res.json(user);
 };
 
