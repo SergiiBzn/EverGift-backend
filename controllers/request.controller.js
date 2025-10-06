@@ -82,26 +82,43 @@ export const responseContactRequest = async (req, res) => {
     if (!fromUser || !toUser) {
       throw new Error("User not found", { cause: 404 });
     }
-    //
-    const contactA = await Contact.create({
+    //check linkedUserId exists in Contact with ownerId
+    const existContactA = await Contact.findOne({
       ownerId: request.fromUserId,
       contactType: "user",
       linkedUserId: request.toUserId,
     });
-    // add contact to user.contacts array
-    await User.findByIdAndUpdate(request.fromUserId, {
-      $push: { contacts: contactA._id },
-    });
-    // create Contact for toUser
-    const contactB = await Contact.create({
+
+    const existContactB = await Contact.findOne({
       ownerId: request.toUserId,
       contactType: "user",
       linkedUserId: request.fromUserId,
     });
-    // add contact to user.contacts array
-    await User.findByIdAndUpdate(request.toUserId, {
-      $push: { contacts: contactB._id },
-    });
+
+    // create Contact for fromUser
+    if (!existContactA) {
+      const contactA = await Contact.create({
+        ownerId: request.fromUserId,
+        contactType: "user",
+        linkedUserId: request.toUserId,
+      });
+      // add contact to user.contacts array
+      await User.findByIdAndUpdate(request.fromUserId, {
+        $push: { contacts: contactA._id },
+      });
+    }
+    // create Contact for toUser
+    if (!existContactB) {
+      const contactB = await Contact.create({
+        ownerId: request.toUserId,
+        contactType: "user",
+        linkedUserId: request.fromUserId,
+      });
+      // add contact to user.contacts array
+      await User.findByIdAndUpdate(request.toUserId, {
+        $push: { contacts: contactB._id },
+      });
+    }
 
     // Create notification for the user who accepted the request
     await Notification.create({
@@ -119,8 +136,6 @@ export const responseContactRequest = async (req, res) => {
     res.json({
       message: "Contact request accepted",
       request,
-      contactA,
-      contactB,
     });
   } else if (action === "reject") {
     request.status = "rejected";
