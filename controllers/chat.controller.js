@@ -69,7 +69,7 @@ RESPONSE REQUIREMENTS:
 • Focus on why each gift suits ${contactName}
 • Use the same language as the user's question
 •answer also another questions related to the gift or to your suggestions
-•for every answer always use markdown and paragraph elements to format the response
+•for every answer always use markdown separated by 1 line break to format the response
 
 
 `,
