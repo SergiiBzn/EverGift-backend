@@ -1,48 +1,55 @@
-/** @format */
-
 import mongoose, { Schema, model } from "mongoose";
 import { GivenGift, User, Event, Gift } from "./index.js";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
 import { generateUniqueSlug } from "../utils/index.js"; //********** contact Schema **********/
 
-const contactSchema = new Schema({
-  ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  contactType: {
-    type: String,
-    enum: ["user", "custom"],
-    default: "custom",
-    required: true, //user ohne Konto (Kinder) -> Form
+const contactSchema = new Schema(
+  {
+    ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    contactType: {
+      type: String,
+      enum: ["user", "custom"],
+      default: "custom",
+      required: true, //user ohne Konto (Kinder) -> Form
+    },
+
+    linkedUserId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    customProfile: {
+      type: profileSchema,
+      default: () => ({}),
+    },
+
+    customWishList: { type: [wishItemSchema], default: [] },
+
+    note: { type: String },
+    givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
+    events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
+
+    slug: {
+      type: String,
+      unique: true,
+    },
+
+    // contact status for request
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "accepted", // custom contact default: accepted
+    },
+    // user who requested the contact
+    requestBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
-
-  linkedUserId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
-
-  customProfile: {
-    type: profileSchema,
-    default: () => ({}),
-  },
-
-  customWishList: { type: [wishItemSchema], default: [] },
-
-  note: { type: String },
-  givenGifts: [{ type: Schema.Types.ObjectId, ref: "GivenGift" }],
-  events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
-
-  slug: {
-    type: String,
-
-    unique: true,
-  },
-
-  //  status: {
-  //   type: String,
-  //   enum: ['pending', 'accepted', 'blocked'],
-  //   default: 'accepted' // custom contact default: accepted
-  // },
-});
+  { timestamps: true }
+);
 
 // Pre-save hook to generate slug from custom contact name
 contactSchema.pre("save", async function (next) {

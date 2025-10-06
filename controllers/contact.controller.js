@@ -1,26 +1,24 @@
-/** @format */
-
-import { Contact, User } from "../models/index.js";
+import { Contact, User, ContactRequest } from "../models/index.js";
 import { transformContacts } from "../utils/transformContact.js";
 
 /**
  * Helper: Format the contact output and unify the front-end structure
  */
 const formContact = (contact) => {
+  const isUserContact = contact.contactType === "user";
+
   return {
     id: contact._id,
     contactType: contact.contactType,
     note: contact.note,
     givenGifts: contact.givenGifts,
     events: contact.events,
-    profile:
-      contact.contactType === "user"
-        ? contact.linkedUserId.profile
-        : contact.customProfile,
-    wishList:
-      contact.contactType === "user"
-        ? contact.linkedUserId.wishList
-        : contact.customWishList,
+    profile: isUserContact
+      ? contact.linkedUserId.profile
+      : contact.customProfile,
+    wishList: isUserContact
+      ? contact.linkedUserId.wishList
+      : contact.customWishList,
     slug: contact.slug,
   };
 };
