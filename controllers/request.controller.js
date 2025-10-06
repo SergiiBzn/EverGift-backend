@@ -22,7 +22,9 @@ export const sendContactRequest = async (req, res) => {
     linkedUserId: toUser._id,
   });
   if (existContact) {
-    throw new Error("Contact already exists", { cause: 400 });
+    throw new Error(`Contact with ${toUser.profile.name} already exists`, {
+      cause: 400,
+    });
   }
   const existRequest = await ContactRequest.findOne({
     fromUserId,
@@ -30,9 +32,12 @@ export const sendContactRequest = async (req, res) => {
     status: { $in: ["pending", "accepted"] },
   });
   if (existRequest) {
-    throw new Error("You have already sent a request to this user", {
-      cause: 400,
-    });
+    throw new Error(
+      `You have already sent a request to ${toUser.profile.name}`,
+      {
+        cause: 400,
+      }
+    );
   }
   const request = await ContactRequest.create({
     fromUserId,
