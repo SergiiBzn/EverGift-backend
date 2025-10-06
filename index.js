@@ -7,11 +7,14 @@ import path from "path";
 import multer from "multer";
 import cors from "cors";
 
+import OpenAI from "openai";
+
 import { getDirname } from "./utils/dirname.js";
 import cookieParser from "cookie-parser";
 import "./db/index.js";
 import { errorHandler, authenticate } from "./middlewares/index.js";
 import { userRouter, contactRouter, authRouter } from "./routers/index.js";
+import chatRouter from "./routers/chat.router.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -61,6 +64,8 @@ app.use("/auth", authRouter);
 app.use(authenticate);
 app.use("/users", userRouter);
 app.use("/contacts", contactRouter);
+
+app.use("/ai", chatRouter);
 
 app.use("/{*splat}", (req, _res) => {
   throw new Error(`URL unavailable; you used ${req.originalUrl}`, {
