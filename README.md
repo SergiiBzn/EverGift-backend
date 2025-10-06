@@ -39,18 +39,17 @@
 
 1. **Clone the repository**
 ```bash
-   git clone https://github.com/SergiiBzn/EverGift-backend.git
-   cd EverGift-backend
+git clone https://github.com/SergiiBzn/EverGift-backend.git
+cd EverGift-backend
 ```
 
-2.	Install dependencies
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3.	Create an .env file
-
-PORT=4000
+3. **Create an .env file**
+```bash
 MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/evergift
 JWT_SECRET=your_secret_key
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -58,9 +57,9 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 OPENAI_API_KEY=your_openai_key
 GOOGLE_API_KEY=your_google_key
+```
 
-
-4.	Run in development mode
+4. **Run in development mode**
 
 ```bash
 npm run dev
