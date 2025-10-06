@@ -64,10 +64,13 @@ CONTEXT: Available wishlist items: ${contactWishlistPrompt}
 
 RESPONSE REQUIREMENTS:
 • Keep responses very short
-• Suggest only 8 most relevant gifts, but not the gift from the wishlist
+• Suggest only at most 8 relevant gifts, but not the gift from the wishlist
 • Format responses clearly with bullet points
 • Focus on why each gift suits ${contactName}
 • Use the same language as the user's question
+•answer also another questions related to the gift or to your suggestions
+•for every answer always use markdown and paragraph elements to format the response
+
 
 `,
         },
