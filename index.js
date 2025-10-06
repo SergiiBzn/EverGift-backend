@@ -6,16 +6,20 @@ import path from "path";
 
 import cors from "cors";
 
+import OpenAI from "openai";
+
 import { getDirname } from "./utils/dirname.js";
 import cookieParser from "cookie-parser";
 import "./db/index.js";
 import { errorHandler, authenticate } from "./middlewares/index.js";
+
 import {
   userRouter,
   contactRouter,
   authRouter,
   requestRouter,
   notificationRouter,
+  chatRouter,
 } from "./routers/index.js";
 
 const app = express();
@@ -73,6 +77,8 @@ app.use("/users", userRouter);
 app.use("/contacts", contactRouter);
 app.use("/requests", requestRouter);
 app.use("/notifications", notificationRouter);
+
+app.use("/ai", chatRouter);
 
 app.use("/{*splat}", (req, _res) => {
   throw new Error(`URL unavailable; you used ${req.originalUrl}`, {
