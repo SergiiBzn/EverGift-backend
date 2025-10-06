@@ -32,6 +32,10 @@ const eventSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    achived: {
+      type: Boolean,
+      default: false,
+    },
     date: {
       type: Date,
       required: true,

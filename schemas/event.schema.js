@@ -1,5 +1,3 @@
-/** @format */
-
 import { z } from "zod/v4";
 import { giftSchema } from "./gift.schema.js";
 
@@ -13,6 +11,7 @@ export const createEventSchema = z.object({
   date: z.coerce.date({ required_error: "Date is required" }),
   isRepeat: z.enum(["yearly", "none"]).optional(),
   isPinned: z.boolean().optional(),
+
   gift: giftForEventSchema.optional(),
 });
 
