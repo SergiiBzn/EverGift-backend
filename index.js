@@ -1,18 +1,14 @@
-/** @format */
-
 import express from "express";
 import chalk from "chalk";
 import path from "path";
 
 import cors from "cors";
-
-import OpenAI from "openai";
-
+// import cron from "node-cron";
 import { getDirname } from "./utils/dirname.js";
 import cookieParser from "cookie-parser";
 import "./db/index.js";
 import { errorHandler, authenticate } from "./middlewares/index.js";
-
+// import { generateNextYearEvents } from "./services/eventScheduler.js";
 import {
   userRouter,
   contactRouter,
@@ -25,8 +21,6 @@ import {
 const app = express();
 const port = process.env.PORT || 3000;
 
-//app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
-// app.use(cors({credentials: true, origin: "http://localhost:5173" || "https://evergift-frontend.onrender.com"}));
 const allowedOrigins = [
   "https://evergift-frontend.onrender.com",
   "http://localhost:5173",
@@ -85,6 +79,19 @@ app.use("/{*splat}", (req, _res) => {
     cause: 404,
   });
 });
+// run the event generator daily at 2am
+// cron.schedule("0 2 * * *", async () => {
+//   console.log("🕑 Running daily event generator...");
+//   await generateNextYearEvents();
+// });
+
+// // run the event generator every minute in development mode
+// if (process.env.NODE_ENV === "development") {
+//   cron.schedule("* * * * *", async () => {
+//     console.log("⚙️  Testing: running event generator every minute...");
+//     await generateNextYearEvents();
+//   });
+// }
 
 app.use(errorHandler);
 
