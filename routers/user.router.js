@@ -11,7 +11,7 @@ import {
 import {
   updateUserProfile,
   updateUserWishList,
-  getAllUsers,
+  searchUsers,
 } from "../controllers/user.controller.js";
 import { validate } from "../middlewares/index.js";
 import { updateUserSchema } from "../schemas/user.schema.js";
@@ -28,7 +28,7 @@ const userRouter = Router();
 
 userRouter.route("/logout").delete(logout);
 
-userRouter.route("/allUsers").get(getAllUsers);
+userRouter.route("/search").get(searchUsers);
 userRouter
   .route("/me")
   .get(me)

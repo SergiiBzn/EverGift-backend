@@ -4,9 +4,16 @@ import { User } from "../models/index.js";
 
 //********** GET /users/all **********
 
-export const getAllUsers = async (req, res) => {
-  const users = await User.find().select("email");
-  res.json(users);
+export const searchUsers = async (req, res) => {
+  const email = req.query.q.trim();
+  if (!email) return res.json({ users: [] });
+
+  const user = await User.findOne({
+    _id: { $ne: req.userId },
+    email: { $regex: email, $options: "i" },
+  }).select("email profile.name profile.avatar");
+
+  res.json(user);
 };
 
 // profile update and wishList update
