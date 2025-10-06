@@ -144,3 +144,16 @@ export const responseContactRequest = async (req, res) => {
   await request.save();
   res.json(request);
 };
+
+// get all contact requests for a user
+export const getAllContactRequests = async (req, res) => {
+  const fromUserId = req.userId;
+  const requests = await ContactRequest.find({ fromUserId }).populate({
+    path: "toUserId",
+    select: "profile",
+  });
+
+  if (!requests) throw new Error("No requests found", { cause: 404 });
+
+  res.json(requests);
+};
