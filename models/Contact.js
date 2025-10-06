@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import { GivenGift, User, Event, Gift } from "./index.js";
+import { GivenGift, User, Event, Gift, ContactRequest } from "./index.js";
 import { profileSchema } from "./profileSchema.js";
 import { wishItemSchema } from "./wishListSchema.js";
 import { generateUniqueSlug } from "../utils/index.js"; //********** contact Schema **********/
@@ -115,6 +115,15 @@ contactSchema.pre("findOneAndDelete", async function (next) {
       $pull: { events: { $in: contact.events } },
     });
   }
+
+  // remove contact request
+  await ContactRequest.deleteMany({
+    $or: [
+      { fromUserId: contact.ownerId, toUserId: contact.linkedUserId },
+      { fromUserId: contact.linkedUserId, toUserId: contact.ownerId },
+    ],
+  });
+
   // remove contact from user's contacts array
   await User.findByIdAndUpdate(contact.ownerId, {
     $pull: { contacts: contact._id },
