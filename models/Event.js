@@ -15,7 +15,7 @@ const eventSchema = new Schema(
     title: {
       type: String,
       required: true,
-      unique: true, // ✅ unique Index
+      // unique: true, // ✅ unique Index
       lowercase: true, // ✅ automatisch lowercase speichern
       trim: true, // ✅ Whitespace entfernen
     },
