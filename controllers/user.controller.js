@@ -1,6 +1,6 @@
 /** @format */
 
-import { User, Contact } from "../models/index.js";
+import { User, Contact, ContactRequest } from "../models/index.js";
 
 //********** GET /users/search **********
 
@@ -21,7 +21,21 @@ export const searchUsers = async (req, res) => {
       linkedUserId: user._id,
     });
     if (existContact) {
-      throw new Error("User is already in your contacts", { cause: 400 });
+      throw new Error(`${user.profile.name} is already in your contacts`, {
+        cause: 400,
+      });
+    }
+    const existRequest = await ContactRequest.findOne({
+      fromUserId: req.userId,
+      toUserId: user._id,
+    });
+    if (existRequest) {
+      throw new Error(
+        `You have already sent a request to ${user.profile.name}`,
+        {
+          cause: 400,
+        }
+      );
     }
   }
   res.json(user);
