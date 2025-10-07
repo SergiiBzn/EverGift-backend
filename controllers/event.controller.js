@@ -1,8 +1,6 @@
-/** @format */
-
-import { Event, Contact, Gift, User } from "../models/index.js";
+import { Event, Contact, Gift, User, GivenGift } from "../models/index.js";
 // format event object
-
+import { formContact } from "./contact.controller.js";
 const formatEvent = async (eventDoc) => {
   const populated = await eventDoc.populate([
     {
@@ -189,5 +187,87 @@ export const deleteEvent = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Failed to delete event", error: err.message });
+  }
+};
+
+// put /archivedEvents/:eventId
+export const archiveEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const ownerId = req.userId;
+    // find the event and contact
+    const eventToAchive = await Event.findById(eventId);
+    if (!eventToAchive)
+      return res.status(404).json({ message: "Event not found" });
+    // update event achived status
+    eventToAchive.achived = true;
+    await eventToAchive.save();
+
+    const { contactId, gift } = eventToAchive;
+    const contact = await Contact.findById(contactId);
+    // const owner = await User.findById(ownerId);
+
+    // update contact events
+    await Contact.findByIdAndUpdate(contactId, {
+      $pull: { events: eventId },
+    });
+    // update user events
+    await User.findByIdAndUpdate(ownerId, {
+      $pull: { events: eventId },
+    });
+
+    let givenGift = null;
+    //  if there is a gift, create a givenGift
+    if (gift) {
+      // find Gift
+      const giftToArchive = await Gift.findById(gift);
+      if (giftToArchive) {
+        giftToArchive.description = eventToAchive.title;
+        await giftToArchive.save();
+        givenGift = await GivenGift.create({
+          gift: giftToArchive._id,
+          contactId: contactId,
+        });
+        await Contact.findByIdAndUpdate(contactId, {
+          $push: { givenGifts: givenGift._id },
+        });
+
+        // if it's a custom contact, delete the corresponding item from their wishlist
+        if (contact.contactType === "custom") {
+          // wishList is an Array ["item","description"]
+          // gift {name, description, date}
+          // find the item in the wishlist with same Gift name and delete it
+          // update contact wishList
+          await Contact.findByIdAndUpdate(contactId, {
+            $pull: {
+              customWishList: {
+                $or: [
+                  { item: giftToArchive.name },
+                  { item: { $regex: giftToArchive.name, $options: "i" } },
+                ],
+              },
+            },
+          });
+        }
+      }
+    }
+    const updatedContact = await Contact.findById(contactId).populate([
+      { path: "givenGifts", populate: { path: "gift", model: "Gift" } },
+      { path: "events", populate: { path: "gift", model: "Gift" } },
+      { path: "linkedUserId", select: "profile wishList slug" },
+    ]);
+
+    // format event object
+    // const finalEvent = await formatEvent(eventToAchive);
+    return res.status(200).json({
+      message: "Event archived successfully",
+      contact: formContact(updatedContact),
+      eventToAchive,
+    });
+  } catch (err) {
+    const status = err?.name === "ValidationError" ? 400 : 500;
+    return res
+      .status(status)
+      .json({ message: "Failed to archive event", error: err.message });
   }
 };
