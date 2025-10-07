@@ -4,7 +4,7 @@ import { transformContacts } from "../utils/transformContact.js";
 /**
  * Helper: Format the contact output and unify the front-end structure
  */
-const formContact = (contact) => {
+export const formContact = (contact) => {
   const isUserContact = contact.contactType === "user";
 
   return {
