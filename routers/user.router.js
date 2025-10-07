@@ -23,6 +23,7 @@ import { deleteUser } from "../controllers/auth.controller.js";
 import { me, updateUser, logout } from "../controllers/auth.controller.js";
 import { updateWishListSchema } from "../schemas/contact.schema.js";
 import uploadFile from "../middlewares/imageFileUpload.js";
+import { archiveEvent } from "../controllers/event.controller.js";
 
 const userRouter = Router();
 
@@ -51,5 +52,8 @@ userRouter
   .get(getReceivedGift)
   .put(validate(updateReceivedGiftSchema), updateReceivedGift)
   .delete(deleteReceivedGift);
+
+//********** events **********
+userRouter.route("/archivedEvents/:eventId").put(archiveEvent);
 
 export default userRouter;
