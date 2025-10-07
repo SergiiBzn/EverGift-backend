@@ -12,6 +12,7 @@ import {
   updateUserProfile,
   updateUserWishList,
   searchUsers,
+  getHasNotification,
 } from "../controllers/user.controller.js";
 import { validate } from "../middlewares/index.js";
 import { updateUserSchema } from "../schemas/user.schema.js";
@@ -55,5 +56,8 @@ userRouter
 
 //********** events **********
 userRouter.route("/archivedEvents/:eventId").put(archiveEvent);
+
+//********** notifications **********
+userRouter.route("/hasNotification").get(getHasNotification);
 
 export default userRouter;
