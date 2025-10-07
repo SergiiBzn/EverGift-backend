@@ -1,12 +1,12 @@
 /** @format */
 
-import { User, Contact } from "../models/index.js";
+import { User, Contact, ContactRequest } from "../models/index.js";
 
-//********** GET /users/all **********
+//********** GET /users/search **********
 
 export const searchUsers = async (req, res) => {
   const email = req.query.q.trim();
-  if (!email) return res.json({ users: [] });
+  if (!email) return res.status(400).json({ message: "Email is required" });
 
   const user = await User.findOne({
     _id: { $ne: req.userId },
@@ -21,7 +21,21 @@ export const searchUsers = async (req, res) => {
       linkedUserId: user._id,
     });
     if (existContact) {
-      throw new Error("User is already in your contacts", { cause: 400 });
+      throw new Error(`${user.profile.name} is already in your contacts`, {
+        cause: 400,
+      });
+    }
+    const existRequest = await ContactRequest.findOne({
+      fromUserId: req.userId,
+      toUserId: user._id,
+    });
+    if (existRequest) {
+      throw new Error(
+        `You have already sent a request to ${user.profile.name}`,
+        {
+          cause: 400,
+        }
+      );
     }
   }
   res.json(user);
@@ -64,4 +78,14 @@ export const updateUserWishList = async (req, res) => {
     throw new Error("User not found", { cause: 404 });
   }
   res.json(user);
+};
+
+// get users/hasNotification
+export const getHasNotification = async (req, res) => {
+  const userId = req.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found", { cause: 404 });
+  }
+  res.json(user.hasNotification);
 };
