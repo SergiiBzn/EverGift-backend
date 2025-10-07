@@ -19,7 +19,8 @@ export const chatController = async (req, res) => {
   const ownerId = req.userId;
 
   // find wischlist of user contact and add to prompt
-  const { prompt, contactId, wishList, contactName } = req.body;
+  const { prompt, contactId, wishList, contactName, birthdate, gender } =
+    req.body;
 
   try {
     /* const response = await openai.chat.completions.create({
@@ -45,7 +46,7 @@ export const chatController = async (req, res) => {
 
     if (contactWishlist) {
       contactWishlistPrompt = `
-      I have the following wishlist for ${contact.slug}:
+      I have the following wishlist for ${contactName}:
       ${contactWishlist.map((w) => `- ${w.item}+ ${w.description}`).join("\n")}.
       `;
     }
@@ -59,6 +60,7 @@ export const chatController = async (req, res) => {
         {
           role: "system",
           content: `ROLE: You are a concise gift assistant for ${contactName}.
+          You are a gift assistant for ${contactName} with the following birthdate ${birthdate} and gender ${gender}.
 
 CONTEXT: Available wishlist items: ${contactWishlistPrompt}
 
@@ -67,6 +69,7 @@ RESPONSE REQUIREMENTS:
 • Suggest only at most 8 relevant gifts, but not the gift from the wishlist
 • Format responses clearly with bullet points
 • Focus on why each gift suits ${contactName}
+• Provide thoughtful and relevant gift suggestions tailored to the user’s birthdate (${birthdate}), gender (${gender}) and wishlist, making sure each idea fits their likely age, personality, and preferences.
 • Use the same language as the user's question
 •answer also another questions related to the gift or to your suggestions
 •for every answer always use markdown separated by 1 line break to format the response
