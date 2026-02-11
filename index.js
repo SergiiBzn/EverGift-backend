@@ -42,9 +42,13 @@ const corsOptions = {
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: "Content-Type,Authorization",
 };
-// Health Check Endpoint for UptimeRobot
+
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
+});
+// Health Check Endpoint for UptimeRobot
+app.get("/", (req, res) => {
+  res.status(200).send("connected!");
 });
 
 app.use(cors(corsOptions));
